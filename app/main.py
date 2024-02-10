@@ -1,11 +1,6 @@
 from fastapi import FastAPI
-import uvicorn
+from app.user.router import userRouter
 
 app = FastAPI()
 
-@app.get("/")
-def read_root():
-  return {"path": "Root"} 
-
-if __name__ == "__main__":
-  uvicorn.run("main:app", reload=True)
+app.include_router(userRouter)

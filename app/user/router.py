@@ -1,23 +1,32 @@
 from fastapi import APIRouter, HTTPException, Depends
-from sqlalchemy.orm import Session
 from .repository import add_new_user
 from .schemas import UserCreate
-from app.database import engine, Base, SessionLocal
+from app.database import get_db, engine, Base
+
+user_router = APIRouter(prefix="/api/user", tags=["User"])
 
 Base.metadata.create_all(bind=engine)
 
 
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
+@user_router.get("/info")
+async def get_user_info():
+    return "Receive user info"
 
 
-userRouter = APIRouter(prefix="/api/user", tags=["items"])
+# TODO перенести в регистрацию
+@user_router.post("/create")
+async def create_user(user: UserCreate, db=Depends(get_db)):
+    new_user = add_new_user(user, db)
+    if not new_user:
+        raise HTTPException(status_code=400, detail="NOT_UNIQ_EMAIL_OR_USERNAME")
+    return None
 
 
-@userRouter.post("/create")
-async def create_user(user: UserCreate, db: Session = Depends(get_db)):
-    add_new_user(db, user)
+@user_router.put("/edit")
+async def edit_user(new_user_info):
+    return "Edit user info"
+
+
+@user_router.delete("/delete")
+async def delete_user():
+    return "Delete user"

@@ -1,9 +1,16 @@
 from pydantic_settings import BaseSettings, SettingsConfigDict
-from pydantic import Field, MySQLDsn
 
 
 class Settings(BaseSettings, case_sensitive=True):
-    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
+    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="allow")
+
+
+class AppSettings(Settings):
+    model_config = SettingsConfigDict(env_prefix="APP_")
+
+    SECRET_KEY: str
+    ALGORITHM: str
+    TOKEN_EXPIRE_MINUTES: int
 
 
 class DatabaseSettings(Settings):
@@ -16,8 +23,8 @@ class DatabaseSettings(Settings):
 
     @property
     def db_url(self):
-        # return MySQLDsn.build(host=self.HOST, user=self.USER, password=self.PASSWORD, db=self.DB)
         return f"mysql+pymysql://{self.USER}:{self.PASSWORD}@{self.HOST}/{self.DB}"
 
 
+app_settings = AppSettings()
 db_settings = DatabaseSettings()

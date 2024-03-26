@@ -1,4 +1,5 @@
 from sqlalchemy import Column, Integer, JSON, SmallInteger, ForeignKey
+from sqlalchemy.orm import relationship
 
 from app.config.database import Base
 
@@ -11,3 +12,5 @@ class ProjectModel(Base):
     neighbors_location = Column(JSON)
     width_parcel = Column(SmallInteger)
     length_parcel = Column(SmallInteger)
+
+    user = relationship("UserModel", back_populates="projects")

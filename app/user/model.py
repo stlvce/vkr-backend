@@ -11,4 +11,5 @@ class UserModel(Base):
     email = Column(String(32), unique=True, index=True)
     username = Column(String(32), unique=True)
     hashed_password = Column(String(64))
-    projects = relationship("ProjectModel")
+
+    projects = relationship("ProjectModel", back_populates="user", cascade="all, delete-orphan")

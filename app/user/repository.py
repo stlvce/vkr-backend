@@ -7,7 +7,7 @@ from .model import UserModel
 from .schemas import UserIn, UserOut, UserCreate
 
 
-async def add_new_user(new_user: UserCreate, db: Session) -> UserOut | None:
+def add_new_user(new_user: UserCreate, db: Session) -> UserOut | None:
     try:
         hashed_password = get_password_hash(new_user.password)
         db_user = UserModel(email=new_user.email, username=new_user.username, hashed_password=hashed_password)

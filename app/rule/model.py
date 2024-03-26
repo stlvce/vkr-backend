@@ -1,5 +1,6 @@
-from app.database import Base
-from sqlalchemy import Column, Integer, String, SmallInteger, VARCHAR
+from sqlalchemy import Column, Integer, SmallInteger, VARCHAR
+
+from app.config.database import Base
 
 
 class RuleModel(Base):

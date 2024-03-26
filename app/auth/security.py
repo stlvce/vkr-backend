@@ -1,26 +1,26 @@
 from fastapi import HTTPException, Depends, status
-from datetime import datetime, timedelta, timezone
-from app.user.repository import get_user_by_username
-from sqlalchemy.orm import Session
-from jose import JWTError, jwt
-from app.config import app_settings
-from typing import Annotated
 from fastapi.security import OAuth2PasswordBearer
-from app.database import get_db
+from sqlalchemy.orm import Session
+from datetime import datetime, timedelta, timezone
+from jose import JWTError, jwt
+from typing import Annotated
+
+from app.config.settings import app_settings
+from app.config.database import get_db
+from app.config.exceptions import UnauthorizedException
+from app.user.repository import get_user_by_username
+from app.user.schemas import UserOut
+
 from .schemas import TokenData
 from .service import verify_password
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/login")
 
 
-def authenticate_user(db: Session, username: str, password: str):
-    user = get_user_by_username(db, username)
+def authenticate_user(username: str, password: str, db: Session):
+    user = get_user_by_username(username, db)
     if not user or not verify_password(password, user.hashed_password):
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect username or password",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
+        raise UnauthorizedException
     return user
 
 
@@ -35,21 +35,16 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None):
     return encoded_jwt
 
 
-async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)], db=Depends(get_db)):
-    credentials_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Could not validate credentials",
-        headers={"WWW-Authenticate": "Bearer"},
-    )
+async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)], db=Depends(get_db)) -> UserOut:
     try:
         payload = jwt.decode(token, app_settings.SECRET_KEY, algorithms=[app_settings.ALGORITHM])
         username: str = payload.get("sub")
         if username is None:
-            raise credentials_exception
+            raise UnauthorizedException
         token_data = TokenData(username=username)
     except JWTError:
-        raise credentials_exception
-    user = get_user_by_username(db, token_data.username)
+        raise UnauthorizedException
+    user = get_user_by_username(token_data.username, db)
     if user is None:
-        raise credentials_exception
+        raise UnauthorizedException
     return user

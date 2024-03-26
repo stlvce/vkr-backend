@@ -1,5 +1,6 @@
-from app.database import Base
 from sqlalchemy import Column, Integer, JSON, SmallInteger, ForeignKey
+
+from app.config.database import Base
 
 
 class ProjectModel(Base):

@@ -1,24 +1,31 @@
-from fastapi import APIRouter, HTTPException, Depends
-from .schemas import UserBase
-from app.database import get_db, engine, Base
-from .repository import get_user_by_username
+from fastapi import APIRouter, Depends, Response
+from typing import Annotated
+
+from app.config.database import get_db
 from app.auth.security import get_current_user
+
+from .schemas import UserOut, UserIn
+from .repository import change_user_info, delete_current_user
 
 user_router = APIRouter(prefix="/api/user", tags=["User"])
 
-Base.metadata.create_all(bind=engine)
+
+@user_router.get("", response_model=UserOut)
+async def get_user_info(current_user: Annotated[UserOut, Depends(get_current_user)]):
+    return current_user
 
 
-@user_router.get("/info")
-async def get_user_info(current_user: UserBase = Depends(get_current_user), db=Depends(get_db), ):
-    return get_user_by_username(db, current_user.username)
+@user_router.put("", response_class=Response, response_model_exclude_none=True)
+async def edit_user_info(new_user_info: UserIn, current_user: Annotated[UserOut, Depends(get_current_user)],
+                         db=Depends(get_db)):
+    if current_user.username == new_user_info.username and current_user.email == new_user_info.email:
+        return Response(content=None)
+
+    await change_user_info(current_user, new_user_info, db)
+    return Response(content=None)
 
 
-@user_router.put("/edit")
-async def edit_user(new_user_info):
-    return "Edit user info"
-
-
-@user_router.delete("/delete")
-async def delete_user():
-    return "Delete user"
+@user_router.delete("")
+async def delete_user(current_user: Annotated[UserOut, Depends(get_current_user)], db=Depends(get_db)):
+    await delete_current_user(current_user.id, db)
+    return Response(content=None)

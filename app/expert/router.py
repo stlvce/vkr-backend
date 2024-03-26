@@ -1,9 +1,6 @@
-from fastapi import APIRouter, HTTPException, Depends
-from app.database import get_db, engine, Base
+from fastapi import APIRouter
 
-expert_router = APIRouter(prefix="/expert", tags=["Expert"])
-
-Base.metadata.create_all(bind=engine)
+expert_router = APIRouter(prefix="/api/expert", tags=["Expert"])
 
 
 @expert_router.post("/calculate")

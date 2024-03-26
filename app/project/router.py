@@ -1,11 +1,11 @@
 from fastapi import APIRouter, Depends
+
+from app.config.database import get_db
+
 from .schemas import ProjectCreate
 from .repository import add_new_project
-from app.database import get_db, engine, Base
 
-project_router = APIRouter(prefix="/project", tags=["Projects"])
-
-Base.metadata.create_all(bind=engine)
+project_router = APIRouter(prefix="/api/project", tags=["Projects"])
 
 
 @project_router.get("/all")
@@ -19,12 +19,12 @@ async def get_project_info_by_id(project_id: int):
 
 
 @project_router.post("")
-async def create_new_project(project_data: ProjectCreate, db=Depends(get_db)):
+async def create_project(project_data: ProjectCreate, db=Depends(get_db)):
     return add_new_project(project_data, db)
 
 
-@project_router.delete("")
-async def delete_project():
+@project_router.delete("/{id}")
+async def delete_project(id: int):
     return "delete project"
 
 

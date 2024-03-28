@@ -1,4 +1,5 @@
-from sqlalchemy import Column, Integer, SmallInteger, VARCHAR
+from sqlalchemy import Integer, SmallInteger, String
+from sqlalchemy.orm import Mapped, mapped_column
 
 from app.config.database import Base
 
@@ -6,7 +7,7 @@ from app.config.database import Base
 class RuleModel(Base):
     __tablename__ = "rules"
 
-    id = Column(Integer, primary_key=True)
-    relation = Column(VARCHAR(50), unique=True)
-    tip_text = Column(VARCHAR(100), unique=True)
-    distance = Column(SmallInteger)
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    relation: Mapped[str] = mapped_column(String(50), unique=True)
+    tip_text: Mapped[str] = mapped_column(String(100), unique=True)
+    distance: Mapped[int] = mapped_column(SmallInteger)

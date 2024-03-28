@@ -18,7 +18,7 @@ def receive_projects(user_id: int, db: Session) -> List[ProjectOut]:
 
 
 def receive_project_by_id(user_id: int, project_id: int, db: Session) -> ProjectOut | None:
-    project = db.query(ProjectModel).filter(ProjectModel.id == project_id).first()
+    project = db.get(ProjectModel, project_id)
     if not project or project.user_id != user_id:
         return None
 

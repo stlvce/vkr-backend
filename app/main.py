@@ -7,6 +7,8 @@ from app.auth.router import auth_router
 from app.project.router import project_router
 from app.expert.router import expert_router
 from app.rule.router import rule_router
+from app.building.router import building_router
+from app.tip.router import tip_router
 
 app = FastAPI(docs_url="/api/docs")
 
@@ -23,5 +25,7 @@ app.add_middleware(
 app.include_router(auth_router)
 app.include_router(user_router)
 app.include_router(project_router)
+app.include_router(building_router)
+# app.include_router(tip_router)
 app.include_router(expert_router)
 app.include_router(rule_router)

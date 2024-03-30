@@ -1,7 +1,8 @@
 from sqlalchemy.orm import Session
 from typing import List
 
-from .model import ProjectModel
+from app.config.models import ProjectModel
+
 from .schemas import ProjectIn, ProjectOut, ProjectEdit
 
 

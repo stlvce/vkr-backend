@@ -1,7 +1,8 @@
 from sqlalchemy import exc
 from sqlalchemy.orm import Session
 
-from .model import RuleModel
+from app.config.models import RuleModel
+
 from .schemas import RuleCreate
 
 

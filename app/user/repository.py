@@ -1,9 +1,9 @@
 from sqlalchemy import exc
 from sqlalchemy.orm import Session
 
+from app.config.models import UserModel
 from app.auth.service import get_password_hash
 
-from .model import UserModel
 from .schemas import UserIn, UserOut, UserCreate
 
 

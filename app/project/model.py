@@ -16,5 +16,5 @@ class ProjectModel(Base):
 
     # TODO Mapped
     user = relationship("UserModel", back_populates="projects")
-    buildings = relationship("BuildingModel", back_populates="project", cascade="all, delete-orphan")
-    tips = relationship("TipModel", back_populates="project", cascade="all, delete-orphan")
+    # buildings = relationship("BuildingModel", back_populates="project", cascade="all, delete-orphan")
+    # tips = relationship("TipModel", back_populates="project", cascade="all, delete-orphan")

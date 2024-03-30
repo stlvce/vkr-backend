@@ -4,6 +4,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.config.database import Base
 
 
+# TODO добавить разделения на роли user и admin для router rules
 class UserModel(Base):
     __tablename__ = "users"
 

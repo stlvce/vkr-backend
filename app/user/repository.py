@@ -19,8 +19,9 @@ def add_new_user(new_user: UserCreate, db: Session) -> UserOut | None:
         return None
 
 
-def get_user_by_username(username: str, db: Session) -> UserOut:
-    return db.query(UserModel).filter(UserModel.username == username).first()
+def get_user_by_username(username: str, db: Session) -> UserOut | None:
+    user = db.query(UserModel).filter(UserModel.username == username).first()
+    return user
 
 
 async def change_user_info(user: UserOut, new_user_info: UserIn, db: Session) -> UserOut:

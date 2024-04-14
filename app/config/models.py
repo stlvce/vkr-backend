@@ -1,7 +1,8 @@
-from sqlalchemy import Integer, String, ForeignKey, SmallInteger, JSON
+from sqlalchemy import Integer, String, ForeignKey, SmallInteger, JSON, DateTime
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.ext.declarative import declarative_base
 from geoalchemy2 import Geometry
+from datetime import datetime
 from typing import List
 from enum import Enum
 
@@ -21,6 +22,7 @@ class UserModel(Base):
     email: Mapped[str] = mapped_column(String(32), unique=True, index=True)
     username: Mapped[str] = mapped_column(String(32), unique=True)
     role: Mapped[UserRole] = mapped_column(String(32), default=UserRole.user, nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, nullable=False)
     hashed_password: Mapped[str] = mapped_column(String(64))
 
     projects: Mapped[List["ProjectModel"]] = relationship("ProjectModel", back_populates="user",
@@ -32,9 +34,12 @@ class ProjectModel(Base):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"))
-    neighbors_location: Mapped[List[str]] = mapped_column(JSON)
+    title: Mapped[str] = mapped_column(String(80))
+    description: Mapped[str] = mapped_column(String(200))
     width_parcel: Mapped[int] = mapped_column(SmallInteger)
     length_parcel: Mapped[int] = mapped_column(SmallInteger)
+    neighbors_location: Mapped[List[str]] = mapped_column(JSON)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, nullable=False)
 
     user: Mapped["UserModel"] = relationship("UserModel", back_populates="projects")
     buildings: Mapped[List["BuildingModel"]] = relationship("BuildingModel", back_populates="project",

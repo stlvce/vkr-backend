@@ -3,21 +3,28 @@ from typing import List
 
 
 class ProjectIn(BaseModel):
-    neighbors_location: List[str]
+    title: str
+    description: str | None = None
     width_parcel: int
     length_parcel: int
+    neighbors_location: List[str]
 
 
 class ProjectEdit(BaseModel):
     id: int
-    neighbors_location: List[str]
+    title: str
+    description: str | None = None
     width_parcel: int
     length_parcel: int
+    neighbors_location: List[str]
 
 
 class ProjectOut(BaseModel):
     id: int
     user_id: int
-    neighbors_location: List[str]
+    title: str
+    description: str | None
     width_parcel: int
     length_parcel: int
+    neighbors_location: List[str]
+    created_at: str

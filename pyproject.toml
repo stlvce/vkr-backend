@@ -17,6 +17,7 @@ python-jose = {extras = ["cryptography"], version = "^3.3.0"}
 passlib = {extras = ["bcrypt"], version = "^1.7.4"}
 python-multipart = "^0.0.9"
 geoalchemy2 = "^0.14.6"
+shapely = "^2.0.3"
 
 [build-system]
 requires = ["poetry-core"]

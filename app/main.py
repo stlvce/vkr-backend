@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.config.database import engine
@@ -10,6 +10,7 @@ from app.expert.router import expert_router
 from app.rule.router import rule_router
 from app.building.router import building_router
 from app.tip.router import tip_router
+from app.auth.security import get_current_admin
 
 app = FastAPI(docs_url="/api/docs")
 
@@ -29,4 +30,5 @@ app.include_router(project_router, prefix="/api/project", tags=["project"])
 app.include_router(building_router, prefix="/api/building", tags=["building"])
 app.include_router(tip_router, prefix="/api/tip", tags=["tip"])
 app.include_router(expert_router, prefix="/api/expert", tags=["expert"])
-app.include_router(rule_router, prefix="/api/rule", tags=["rule"])
+app.include_router(rule_router, prefix="/api/rule", tags=["rule"],
+                   dependencies=[Depends(get_current_admin)])

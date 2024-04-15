@@ -11,6 +11,12 @@ class UserRole(Enum):
     user: str = "user"
     admin: str = "admin"
 
+    def __str__(self):
+        return self.value
+
+    def __repr__(self):
+        return repr(self.value)
+
 
 Base = declarative_base()
 

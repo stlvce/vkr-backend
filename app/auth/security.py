@@ -48,3 +48,11 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)], db=Dep
     if user is None:
         raise UnauthorizedException
     return user
+
+
+async def get_current_admin(
+        current_user: Annotated[UserOut, Depends(get_current_user)],
+):
+    if current_user.role != "admin":
+        raise HTTPException(status_code=403)
+    return current_user

@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-tip_router = APIRouter(prefix="/api/tip", tags=["Tip"])
+tip_router = APIRouter()
 
 
 @tip_router.get("")

@@ -23,10 +23,10 @@ app.add_middleware(
     allow_headers=["*"]
 )
 
-app.include_router(auth_router)
-app.include_router(user_router)
-app.include_router(project_router)
-app.include_router(building_router)
-app.include_router(tip_router)
-app.include_router(expert_router)
-app.include_router(rule_router)
+app.include_router(auth_router, prefix="/api/auth", tags=["auth"])
+app.include_router(user_router, prefix="/api/user", tags=["user"])
+app.include_router(project_router, prefix="/api/project", tags=["project"])
+app.include_router(building_router, prefix="/api/building", tags=["building"])
+app.include_router(tip_router, prefix="/api/tip", tags=["tip"])
+app.include_router(expert_router, prefix="/api/expert", tags=["expert"])
+app.include_router(rule_router, prefix="/api/rule", tags=["rule"])

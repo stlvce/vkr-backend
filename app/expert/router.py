@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-expert_router = APIRouter(prefix="/api/expert", tags=["Expert"])
+expert_router = APIRouter()
 
 
 @expert_router.post("")

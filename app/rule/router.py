@@ -5,7 +5,7 @@ from app.config.database import get_db
 from .schemas import RuleCreate
 from .repository import add_new_rule, receive_all_rules, delete_rule_by_id
 
-rule_router = APIRouter(prefix="/api/rule", tags=["Rules"])
+rule_router = APIRouter()
 
 
 @rule_router.get("/all")

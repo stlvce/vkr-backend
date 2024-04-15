@@ -13,7 +13,7 @@ from app.user.repository import add_new_user
 from .schemas import Token
 from .security import create_access_token, authenticate_user
 
-auth_router = APIRouter(prefix="/api/auth", tags=["Auth"])
+auth_router = APIRouter()
 
 
 @auth_router.post("/register")

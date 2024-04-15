@@ -9,7 +9,7 @@ from .schemas import ProjectIn, ProjectEdit
 from .repository import (add_new_project, receive_projects, remove_project_by_id, receive_project_by_id,
                          change_project_info)
 
-project_router = APIRouter(prefix="/api/project", tags=["Projects"])
+project_router = APIRouter()
 
 
 @project_router.get("/all")

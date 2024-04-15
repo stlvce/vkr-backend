@@ -7,7 +7,7 @@ from app.auth.security import get_current_user
 from .schemas import UserOut, UserIn
 from .repository import change_user_info, delete_current_user
 
-user_router = APIRouter(prefix="/api/user", tags=["User"])
+user_router = APIRouter()
 
 
 @user_router.get("", response_model=UserOut)

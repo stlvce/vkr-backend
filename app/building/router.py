@@ -9,7 +9,7 @@ from app.project.repository import receive_project_by_id
 from .schemas import BuildingIn, BuildingOut, BuildingEdit, BuildingDelete
 from .repository import receive_buildings, add_new_building, change_building_info, remove_building_by_id
 
-building_router = APIRouter(prefix="/api/building", tags=["Building"])
+building_router = APIRouter()
 
 
 @building_router.post("")

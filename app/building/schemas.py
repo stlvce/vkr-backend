@@ -7,8 +7,8 @@ class BuildingIn(BaseModel):
     title: str
     start_x: float
     start_y: float
-    width_parcel: int
-    length_parcel: int
+    width: int
+    length: int
 
 
 class BuildingOut(BaseModel):
@@ -16,6 +16,21 @@ class BuildingOut(BaseModel):
     project_id: int
     type: str
     title: str
-    start_point: tuple[int, int]
-    width_parcel: int
-    length_parcel: int
+    start_x: float
+    start_y: float
+    width: int
+    length: int
+
+
+class BuildingEdit(BaseModel):
+    id: int
+    title: str
+    start_x: float
+    start_y: float
+    width: int
+    length: int
+
+
+class BuildingDelete(BaseModel):
+    id: int
+    project_id: int

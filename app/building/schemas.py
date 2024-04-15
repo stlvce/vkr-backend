@@ -5,8 +5,8 @@ class BuildingIn(BaseModel):
     project_id: int
     type: str
     title: str
-    # TODO не работает Point
-    start_point: tuple[int, int]
+    start_x: float
+    start_y: float
     width_parcel: int
     length_parcel: int
 

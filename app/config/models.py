@@ -1,4 +1,4 @@
-from sqlalchemy import Integer, String, ForeignKey, SmallInteger, JSON, DateTime
+from sqlalchemy import Integer, String, ForeignKey, SmallInteger, JSON, DateTime, Float
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.ext.declarative import declarative_base
 from geoalchemy2 import Geometry
@@ -54,7 +54,7 @@ class BuildingModel(Base):
     project_id: Mapped[int] = mapped_column(Integer, ForeignKey("projects.id"))
     type: Mapped[str] = mapped_column(String(30), unique=True)
     title: Mapped[str] = mapped_column(String(40))
-    start_point: Mapped[tuple[int, int]] = mapped_column(Geometry("Point"))
+    start_x: Mapped[float] = mapped_column(Float)
     width_parcel: Mapped[int] = mapped_column(SmallInteger)
     length_parcel: Mapped[int] = mapped_column(SmallInteger)
 

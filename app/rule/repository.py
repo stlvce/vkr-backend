@@ -22,8 +22,13 @@ def receive_all_rules(db: Session):
     return db.query(RuleModel).all()
 
 
-def receive_rule_by_id(rule_id: int, db: Session):
+def receive_rule_by_id(rule_id: int, db: Session) -> RuleOut:
     rule = db.get(RuleModel, rule_id)
+    return rule
+
+
+def receive_rule_by_relation(relation: str, db: Session) -> RuleOut:
+    rule = db.query(RuleModel).filter(RuleModel.relation == relation).first()
     return rule
 
 

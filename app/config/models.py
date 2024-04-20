@@ -64,6 +64,7 @@ class BuildingModel(Base):
     start_y: Mapped[float] = mapped_column(Float)
     width: Mapped[int] = mapped_column(SmallInteger)
     length: Mapped[int] = mapped_column(SmallInteger)
+    material: Mapped[str] = mapped_column(String(40))
 
     project: Mapped["ProjectModel"] = relationship("ProjectModel", back_populates="buildings")
     tips: Mapped[List["TipModel"]] = relationship("TipModel", secondary="building_tips")

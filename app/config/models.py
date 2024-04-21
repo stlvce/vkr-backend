@@ -58,6 +58,8 @@ class LandModel(Base):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     project_id: Mapped[int] = mapped_column(Integer, ForeignKey("projects.id"))
+    land_category_id: Mapped[int] = mapped_column(Integer, ForeignKey("land_categories.id"))
+    type_permission_id: Mapped[int] = mapped_column(Integer, ForeignKey("type_permissions.id"))
 
     width_parcel: Mapped[int] = mapped_column(SmallInteger)
     length_parcel: Mapped[int] = mapped_column(SmallInteger)
@@ -84,7 +86,7 @@ class BuildingModel(Base):
     material: Mapped[str] = mapped_column(String(40))
 
     project: Mapped["ProjectModel"] = relationship("ProjectModel", back_populates="buildings")
-    tips: Mapped[List["TipModel"]] = relationship("TipModel", secondary="building_tips")
+    tips: Mapped[List["TipModel"]] = relationship("TipModel", secondary="building_tips", back_populates="buildings")
 
 
 class TipModel(Base):
@@ -97,7 +99,7 @@ class TipModel(Base):
     description: Mapped[str] = mapped_column(String(100))
 
     project: Mapped["ProjectModel"] = relationship("ProjectModel", back_populates="tips")
-    buildings = relationship("BuildingModel", secondary="building_tips")
+    buildings = relationship("BuildingModel", secondary="building_tips", back_populates="tips")
     norm: Mapped["NormModel"] = relationship(back_populates="tips")
 
 
@@ -131,9 +133,12 @@ class TypePermissionModel(Base):
 
     land_category: Mapped["LandCategoryModel"] = relationship(back_populates="type_permissions")
     lands: Mapped[List["LandModel"]] = relationship(back_populates="type_permission")
-    init_buildings: Mapped[List["InitBuildingModel"]] = relationship(secondary="type_permission_buildings")
-    norms: Mapped[List["NormModel"]] = relationship(secondary="type_permission_norms")
-    documents: Mapped[List["DocumentModel"]] = relationship(secondary="type_permission_documents")
+    init_buildings: Mapped[List["InitBuildingModel"]] = relationship(secondary="type_permission_buildings",
+                                                                     back_populates="type_permissions")
+    norms: Mapped[List["NormModel"]] = relationship(secondary="type_permission_norms",
+                                                    back_populates="type_permissions")
+    documents: Mapped[List["DocumentModel"]] = relationship(secondary="type_permission_documents",
+                                                            back_populates="type_permissions")
 
 
 class InitBuildingModel(Base):
@@ -144,7 +149,8 @@ class InitBuildingModel(Base):
     type: Mapped[str] = mapped_column(String(30), unique=True)
     title: Mapped[str] = mapped_column(String(40))
 
-    type_permissions: Mapped[List["TypePermissionModel"]] = relationship(secondary="type_permission_buildings")
+    type_permissions: Mapped[List["TypePermissionModel"]] = relationship(secondary="type_permission_buildings",
+                                                                         back_populates="init_buildings")
 
 
 class TypePermissionInitBuildings(Base):
@@ -164,9 +170,10 @@ class NormModel(Base):
     description: Mapped[str] = mapped_column(String(100), unique=True)
     distance: Mapped[int] = mapped_column(SmallInteger)
 
-    type_permissions: Mapped[List["TypePermissionModel"]] = relationship(secondary="type_permission_norms")
     tips: Mapped[List["TipModel"]] = relationship(back_populates="norm", cascade="all, delete-orphan")
-    documents: Mapped[List["DocumentModel"]] = relationship(secondary="document_norms")
+    type_permissions: Mapped[List["TypePermissionModel"]] = relationship(secondary="type_permission_norms",
+                                                                         back_populates="norms")
+    documents: Mapped[List["DocumentModel"]] = relationship(secondary="document_norms", back_populates="norms")
 
 
 class TypePermissionNorms(Base):
@@ -187,8 +194,9 @@ class DocumentModel(Base):
     link: Mapped[str] = mapped_column(String(100), unique=True)
     uploaded_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, nullable=False)
 
-    type_permissions: Mapped[List["TypePermissionModel"]] = relationship(secondary="type_permission_documents")
-    norms: Mapped[List["NormModel"]] = relationship(secondary="document_norms")
+    type_permissions: Mapped[List["TypePermissionModel"]] = relationship(secondary="type_permission_documents",
+                                                                         back_populates="documents")
+    norms: Mapped[List["NormModel"]] = relationship(secondary="document_norms", back_populates="documents")
 
 
 class DocumentNorms(Base):

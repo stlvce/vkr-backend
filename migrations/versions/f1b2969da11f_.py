@@ -1,19 +1,19 @@
 """empty message
 
-Revision ID: 93bf27bb3698
-Revises: a94ffdb8e712
-Create Date: 2024-04-21 17:44:44.977579
+Revision ID: f1b2969da11f
+Revises: 
+Create Date: 2024-04-21 19:51:58.244403
 
 """
 from typing import Sequence, Union
 
 from alembic import op
 import sqlalchemy as sa
-from sqlalchemy.dialects import mysql
+
 
 # revision identifiers, used by Alembic.
-revision: str = '93bf27bb3698'
-down_revision: Union[str, None] = 'a94ffdb8e712'
+revision: str = 'f1b2969da11f'
+down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
@@ -52,12 +52,33 @@ def upgrade() -> None:
     sa.UniqueConstraint('description'),
     sa.UniqueConstraint('relation')
     )
+    op.create_table('users',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('email', sa.String(length=32), nullable=False),
+    sa.Column('username', sa.String(length=32), nullable=False),
+    sa.Column('hashed_password', sa.String(length=64), nullable=False),
+    sa.Column('role', sa.String(length=32), nullable=False),
+    sa.Column('created_at', sa.DateTime(), nullable=False),
+    sa.PrimaryKeyConstraint('id'),
+    sa.UniqueConstraint('username')
+    )
+    op.create_index(op.f('ix_users_email'), 'users', ['email'], unique=True)
     op.create_table('document_norms',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('document_id', sa.Integer(), nullable=False),
     sa.Column('norm_id', sa.Integer(), nullable=False),
     sa.ForeignKeyConstraint(['document_id'], ['documents.id'], ),
     sa.ForeignKeyConstraint(['norm_id'], ['norms.id'], ),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_table('projects',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('user_id', sa.Integer(), nullable=False),
+    sa.Column('title', sa.String(length=80), nullable=False),
+    sa.Column('description', sa.String(length=200), nullable=False),
+    sa.Column('created_at', sa.DateTime(), nullable=False),
+    sa.Column('changed_at', sa.DateTime(), nullable=False),
+    sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('type_permissions',
@@ -67,12 +88,38 @@ def upgrade() -> None:
     sa.ForeignKeyConstraint(['land_category_id'], ['land_categories.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
+    op.create_table('buildings',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('project_id', sa.Integer(), nullable=False),
+    sa.Column('type', sa.String(length=30), nullable=False),
+    sa.Column('title', sa.String(length=40), nullable=False),
+    sa.Column('start_x', sa.Float(), nullable=False),
+    sa.Column('start_y', sa.Float(), nullable=False),
+    sa.Column('width', sa.SmallInteger(), nullable=False),
+    sa.Column('length', sa.SmallInteger(), nullable=False),
+    sa.Column('height', sa.SmallInteger(), nullable=False),
+    sa.Column('material', sa.String(length=40), nullable=False),
+    sa.ForeignKeyConstraint(['project_id'], ['projects.id'], ),
+    sa.PrimaryKeyConstraint('id'),
+    sa.UniqueConstraint('type')
+    )
     op.create_table('lands',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('project_id', sa.Integer(), nullable=False),
+    sa.Column('land_category_id', sa.Integer(), nullable=False),
     sa.Column('width_parcel', sa.SmallInteger(), nullable=False),
     sa.Column('length_parcel', sa.SmallInteger(), nullable=False),
     sa.Column('neighbors_location', sa.JSON(), nullable=False),
+    sa.ForeignKeyConstraint(['land_category_id'], ['land_categories.id'], ),
+    sa.ForeignKeyConstraint(['project_id'], ['projects.id'], ),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_table('tips',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('project_id', sa.Integer(), nullable=False),
+    sa.Column('norm_id', sa.Integer(), nullable=False),
+    sa.Column('description', sa.String(length=100), nullable=False),
+    sa.ForeignKeyConstraint(['norm_id'], ['norms.id'], ),
     sa.ForeignKeyConstraint(['project_id'], ['projects.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
@@ -100,50 +147,31 @@ def upgrade() -> None:
     sa.ForeignKeyConstraint(['type_permission_id'], ['type_permissions.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
-    op.drop_index('relation', table_name='rules')
-    op.drop_index('tip_text', table_name='rules')
-    op.drop_table('rules')
-    op.add_column('buildings', sa.Column('height', sa.SmallInteger(), nullable=False))
-    op.add_column('projects', sa.Column('changed_at', sa.DateTime(), nullable=False))
-    op.drop_column('projects', 'width_parcel')
-    op.drop_column('projects', 'length_parcel')
-    op.drop_column('projects', 'neighbors_location')
-    op.add_column('tips', sa.Column('norm_id', sa.Integer(), nullable=False))
-    op.add_column('tips', sa.Column('description', sa.String(length=100), nullable=False))
-    op.create_foreign_key(None, 'tips', 'norms', ['norm_id'], ['id'])
-    op.drop_column('tips', 'tip_text')
+    op.create_table('building_tips',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('building_id', sa.Integer(), nullable=False),
+    sa.Column('tip_id', sa.Integer(), nullable=False),
+    sa.ForeignKeyConstraint(['building_id'], ['buildings.id'], ),
+    sa.ForeignKeyConstraint(['tip_id'], ['tips.id'], ),
+    sa.PrimaryKeyConstraint('id')
+    )
     # ### end Alembic commands ###
 
 
 def downgrade() -> None:
     # ### commands auto generated by Alembic - please adjust! ###
-    op.add_column('tips', sa.Column('tip_text', mysql.VARCHAR(length=100), nullable=False))
-    op.drop_constraint(None, 'tips', type_='foreignkey')
-    op.drop_column('tips', 'description')
-    op.drop_column('tips', 'norm_id')
-    op.add_column('projects', sa.Column('neighbors_location', mysql.JSON(), nullable=False))
-    op.add_column('projects', sa.Column('length_parcel', mysql.SMALLINT(), autoincrement=False, nullable=False))
-    op.add_column('projects', sa.Column('width_parcel', mysql.SMALLINT(), autoincrement=False, nullable=False))
-    op.drop_column('projects', 'changed_at')
-    op.drop_column('buildings', 'height')
-    op.create_table('rules',
-    sa.Column('id', mysql.INTEGER(), autoincrement=True, nullable=False),
-    sa.Column('relation', mysql.VARCHAR(length=50), nullable=False),
-    sa.Column('tip_text', mysql.VARCHAR(length=100), nullable=False),
-    sa.Column('distance', mysql.SMALLINT(), autoincrement=False, nullable=False),
-    sa.PrimaryKeyConstraint('id'),
-    mysql_collate='utf8mb4_0900_ai_ci',
-    mysql_default_charset='utf8mb4',
-    mysql_engine='InnoDB'
-    )
-    op.create_index('tip_text', 'rules', ['tip_text'], unique=True)
-    op.create_index('relation', 'rules', ['relation'], unique=True)
+    op.drop_table('building_tips')
     op.drop_table('type_permission_norms')
     op.drop_table('type_permission_documents')
     op.drop_table('type_permission_buildings')
+    op.drop_table('tips')
     op.drop_table('lands')
+    op.drop_table('buildings')
     op.drop_table('type_permissions')
+    op.drop_table('projects')
     op.drop_table('document_norms')
+    op.drop_index(op.f('ix_users_email'), table_name='users')
+    op.drop_table('users')
     op.drop_table('norms')
     op.drop_table('land_categories')
     op.drop_table('init_buildings')

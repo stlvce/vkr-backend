@@ -24,11 +24,12 @@ class UserModel(Base):
     __tablename__ = "users"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
+
     email: Mapped[str] = mapped_column(String(32), unique=True, index=True)
     username: Mapped[str] = mapped_column(String(32), unique=True)
+    hashed_password: Mapped[str] = mapped_column(String(64))
     role: Mapped[UserRole] = mapped_column(String(32), default=UserRole.user, nullable=False)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, nullable=False)
-    hashed_password: Mapped[str] = mapped_column(String(64))
 
     projects: Mapped[List["ProjectModel"]] = relationship("ProjectModel", back_populates="user",
                                                           cascade="all, delete-orphan")
@@ -39,17 +40,32 @@ class ProjectModel(Base):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"))
+
     title: Mapped[str] = mapped_column(String(80))
     description: Mapped[str] = mapped_column(String(200))
-    width_parcel: Mapped[int] = mapped_column(SmallInteger)
-    length_parcel: Mapped[int] = mapped_column(SmallInteger)
-    neighbors_location: Mapped[List[str]] = mapped_column(JSON)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, nullable=False)
+    changed_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, nullable=False)
 
     user: Mapped["UserModel"] = relationship("UserModel", back_populates="projects")
+    land: Mapped["LandModel"] = relationship(back_populates="project")
     buildings: Mapped[List["BuildingModel"]] = relationship("BuildingModel", back_populates="project",
                                                             cascade="all, delete-orphan")
     tips: Mapped[List["TipModel"]] = relationship("TipModel", back_populates="project", cascade="all, delete-orphan")
+
+
+class LandModel(Base):
+    __tablename__ = "lands"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    project_id: Mapped[int] = mapped_column(Integer, ForeignKey("projects.id"))
+
+    width_parcel: Mapped[int] = mapped_column(SmallInteger)
+    length_parcel: Mapped[int] = mapped_column(SmallInteger)
+    neighbors_location: Mapped[List[str]] = mapped_column(JSON)
+
+    project: Mapped["ProjectModel"] = relationship(back_populates="land")
+    land_category: Mapped["LandCategoryModel"] = relationship(back_populates="lands")
+    type_permission: Mapped["TypePermissionModel"] = relationship(back_populates="lands")
 
 
 class BuildingModel(Base):
@@ -57,12 +73,14 @@ class BuildingModel(Base):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     project_id: Mapped[int] = mapped_column(Integer, ForeignKey("projects.id"))
+
     type: Mapped[str] = mapped_column(String(30), unique=True)
     title: Mapped[str] = mapped_column(String(40))
     start_x: Mapped[float] = mapped_column(Float)
     start_y: Mapped[float] = mapped_column(Float)
     width: Mapped[int] = mapped_column(SmallInteger)
     length: Mapped[int] = mapped_column(SmallInteger)
+    height: Mapped[int] = mapped_column(SmallInteger)
     material: Mapped[str] = mapped_column(String(40))
 
     project: Mapped["ProjectModel"] = relationship("ProjectModel", back_populates="buildings")
@@ -74,10 +92,13 @@ class TipModel(Base):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     project_id: Mapped[int] = mapped_column(Integer, ForeignKey("projects.id"))
-    tip_text: Mapped[str] = mapped_column(String(100))
+    norm_id: Mapped[int] = mapped_column(Integer, ForeignKey("norms.id"))
+
+    description: Mapped[str] = mapped_column(String(100))
 
     project: Mapped["ProjectModel"] = relationship("ProjectModel", back_populates="tips")
     buildings = relationship("BuildingModel", secondary="building_tips")
+    norm: Mapped["NormModel"] = relationship(back_populates="tips")
 
 
 class BuildingTips(Base):
@@ -88,10 +109,99 @@ class BuildingTips(Base):
     tip_id: Mapped[int] = mapped_column(Integer, ForeignKey("tips.id"))
 
 
-class RuleModel(Base):
-    __tablename__ = "rules"
+class LandCategoryModel(Base):
+    __tablename__ = "land_categories"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
+
+    title: Mapped[str] = mapped_column(String(40))
+
+    type_permissions: Mapped[List["TypePermissionModel"]] = relationship(back_populates="land_category",
+                                                                         cascade="all, delete-orphan")
+    lands: Mapped[List["LandModel"]] = relationship(back_populates="land_category")
+
+
+class TypePermissionModel(Base):
+    __tablename__ = "type_permissions"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    land_category_id: Mapped[int] = mapped_column(Integer, ForeignKey("land_categories.id"))
+
+    title: Mapped[str] = mapped_column(String(40))
+
+    land_category: Mapped["LandCategoryModel"] = relationship(back_populates="type_permissions")
+    lands: Mapped[List["LandModel"]] = relationship(back_populates="type_permission")
+    init_buildings: Mapped[List["InitBuildingModel"]] = relationship(secondary="type_permission_buildings")
+    norms: Mapped[List["NormModel"]] = relationship(secondary="type_permission_norms")
+    documents: Mapped[List["DocumentModel"]] = relationship(secondary="type_permission_documents")
+
+
+class InitBuildingModel(Base):
+    __tablename__ = "init_buildings"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+
+    type: Mapped[str] = mapped_column(String(30), unique=True)
+    title: Mapped[str] = mapped_column(String(40))
+
+    type_permissions: Mapped[List["TypePermissionModel"]] = relationship(secondary="type_permission_buildings")
+
+
+class TypePermissionInitBuildings(Base):
+    __tablename__ = "type_permission_buildings"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    type_permission_id: Mapped[int] = mapped_column(Integer, ForeignKey("type_permissions.id"))
+    init_building_id: Mapped[int] = mapped_column(Integer, ForeignKey("init_buildings.id"))
+
+
+class NormModel(Base):
+    __tablename__ = "norms"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+
     relation: Mapped[str] = mapped_column(String(50), unique=True)
-    tip_text: Mapped[str] = mapped_column(String(100), unique=True)
+    description: Mapped[str] = mapped_column(String(100), unique=True)
     distance: Mapped[int] = mapped_column(SmallInteger)
+
+    type_permissions: Mapped[List["TypePermissionModel"]] = relationship(secondary="type_permission_norms")
+    tips: Mapped[List["TipModel"]] = relationship(back_populates="norm", cascade="all, delete-orphan")
+    documents: Mapped[List["DocumentModel"]] = relationship(secondary="document_norms")
+
+
+class TypePermissionNorms(Base):
+    __tablename__ = "type_permission_norms"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    type_permission_id: Mapped[int] = mapped_column(Integer, ForeignKey("type_permissions.id"))
+    norm_id: Mapped[int] = mapped_column(Integer, ForeignKey("norms.id"))
+
+
+class DocumentModel(Base):
+    __tablename__ = "documents"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+
+    title: Mapped[str] = mapped_column(String(40), unique=True)
+    file_type: Mapped[str] = mapped_column(String(30), unique=True)
+    link: Mapped[str] = mapped_column(String(100), unique=True)
+    uploaded_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, nullable=False)
+
+    type_permissions: Mapped[List["TypePermissionModel"]] = relationship(secondary="type_permission_documents")
+    norms: Mapped[List["NormModel"]] = relationship(secondary="document_norms")
+
+
+class DocumentNorms(Base):
+    __tablename__ = "document_norms"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    document_id: Mapped[int] = mapped_column(Integer, ForeignKey("documents.id"))
+    norm_id: Mapped[int] = mapped_column(Integer, ForeignKey("norms.id"))
+
+
+class TypePermissionDocuments(Base):
+    __tablename__ = "type_permission_documents"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    type_permission_id: Mapped[int] = mapped_column(Integer, ForeignKey("type_permissions.id"))
+    document_id: Mapped[int] = mapped_column(Integer, ForeignKey("documents.id"))

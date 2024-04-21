@@ -1,7 +1,6 @@
 from sqlalchemy import Integer, String, ForeignKey, SmallInteger, JSON, DateTime, Float
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.ext.declarative import declarative_base
-from geoalchemy2 import Geometry
 from datetime import datetime
 from typing import List
 from enum import Enum

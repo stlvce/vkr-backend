@@ -7,7 +7,7 @@ from app.user.router import user_router
 from app.auth.router import auth_router
 from app.project.router import project_router
 from app.expert.router import expert_router
-from app.rule.router import rule_router
+from app.norm.router import norm_router
 from app.building.router import building_router
 from app.tip.router import tip_router
 from app.auth.security import get_current_admin
@@ -30,5 +30,5 @@ app.include_router(project_router, prefix="/api/project", tags=["project"])
 app.include_router(building_router, prefix="/api/building", tags=["building"])
 app.include_router(tip_router, prefix="/api/tip", tags=["tip"])
 app.include_router(expert_router, prefix="/api/expert", tags=["expert"])
-app.include_router(rule_router, prefix="/api/rule", tags=["rule"],
+app.include_router(norm_router, prefix="/api/norm", tags=["norm"],
                    dependencies=[Depends(get_current_admin)])

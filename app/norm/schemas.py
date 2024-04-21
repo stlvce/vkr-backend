@@ -2,17 +2,17 @@ from pydantic import BaseModel
 from typing import List
 
 
-class RuleBase(BaseModel):
+class NormBase(BaseModel):
     id: int
 
 
-class RuleOut(RuleBase):
+class NormOut(NormBase):
     relation: List[str]
     distance: int
-    tip_text: str
+    description: str
 
 
-class RuleCreate(BaseModel):
+class NormCreate(BaseModel):
     relation: List[str]
     distance: int
-    tip_text: str
+    description: str

@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 from shapely.geometry import Polygon
 
-from app.rule.repository import receive_rule_by_relation
+from app.norm.repository import receive_norm_by_relation
 
 from .schemas import BuildingInfo
 
@@ -30,7 +30,7 @@ def receive_relation(obj1_type: str, obj2_type: str):
 
 
 def receive_tip(relation: str, distance: float, db: Session) -> str | None:
-    rule = receive_rule_by_relation(relation, db)
+    rule = receive_norm_by_relation(relation, db)
 
     if not rule:
         return None

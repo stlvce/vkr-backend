@@ -134,8 +134,9 @@ class TypePermissionModel(Base):
 
     land_category: Mapped["LandCategoryModel"] = relationship("LandCategoryModel", back_populates="type_permissions")
     lands: Mapped[List["LandModel"]] = relationship("LandModel", back_populates="type_permission")
-    init_buildings: Mapped[List["InitBuildingModel"]] = relationship(secondary="type_permission_buildings",
-                                                                     back_populates="type_permissions")
+    init_buildings: Mapped[List["InitBuildingModel"]] = relationship("InitBuildingModel",
+                                                                     back_populates="type_permission",
+                                                                     cascade="all, delete-orphan")
     norms: Mapped[List["NormModel"]] = relationship(secondary="type_permission_norms",
                                                     back_populates="type_permissions")
     documents: Mapped[List["DocumentModel"]] = relationship(secondary="type_permission_documents",
@@ -146,20 +147,13 @@ class InitBuildingModel(Base):
     __tablename__ = "init_buildings"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    type_permission_id: Mapped[int] = mapped_column(Integer, ForeignKey("type_permissions.id"))
 
     type: Mapped[str] = mapped_column(String(30), unique=True)
     title: Mapped[str] = mapped_column(String(40))
 
-    type_permissions: Mapped[List["TypePermissionModel"]] = relationship(secondary="type_permission_buildings",
-                                                                         back_populates="init_buildings")
-
-
-class TypePermissionInitBuildings(Base):
-    __tablename__ = "type_permission_buildings"
-
-    id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    type_permission_id: Mapped[int] = mapped_column(Integer, ForeignKey("type_permissions.id"))
-    init_building_id: Mapped[int] = mapped_column(Integer, ForeignKey("init_buildings.id"))
+    type_permission: Mapped["TypePermissionModel"] = relationship("TypePermissionModel",
+                                                                  back_populates="init_buildings")
 
 
 class NormModel(Base):

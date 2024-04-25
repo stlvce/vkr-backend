@@ -30,9 +30,9 @@ def change_project_info(user_id: int, new_project_info: ProjectEdit, db: Session
     project = db.query(ProjectModel).filter(ProjectModel.id == new_project_info.id).first()
     if not project or project.user_id != user_id:
         return None
-    setattr(project, "neighbors_location", new_project_info.neighbors_location)
-    setattr(project, "width_parcel", new_project_info.width_parcel)
-    setattr(project, "length_parcel", new_project_info.length_parcel)
+    setattr(project, "title", new_project_info.title)
+    setattr(project, "description", new_project_info.description)
+    setattr(project, "changed_at", new_project_info.changed_at)
 
     db.commit()
     db.refresh(project)

@@ -37,3 +37,8 @@ async def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()], db=D
 @auth_router.post("/logout", deprecated=True)
 async def logout():
     return "Logout"
+
+
+@auth_router.post("/reset", deprecated=True)
+async def reset_password():
+    return "Logout"

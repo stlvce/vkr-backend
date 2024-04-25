@@ -25,6 +25,11 @@ async def edit_user_info(new_user_info: UserIn, current_user: Annotated[UserOut,
     return Response(content=None)
 
 
+@user_router.put("/password", deprecated=True)
+async def edit_user_password(new_user_info: UserIn, current_user: Annotated[UserOut, Depends(get_current_user)]):
+    pass
+
+
 @user_router.delete("")
 async def delete_user(current_user: Annotated[UserOut, Depends(get_current_user)], db=Depends(get_db)):
     await delete_current_user(current_user.id, db)

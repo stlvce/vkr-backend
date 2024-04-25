@@ -17,7 +17,8 @@ from app.type_permission.router import type_permission_router
 from app.init_buildings.router import init_building_router
 from app.documents.router import document_router
 
-app = FastAPI(docs_url="/api/docs")
+app = FastAPI(docs_url="/api/docs",
+              swagger_ui_parameters={"operationsSorter": "method", "syntaxHighlight.theme": "obsidian"})
 
 Base.metadata.create_all(bind=engine)
 
@@ -34,11 +35,12 @@ app.include_router(user_router, prefix="/api/user", tags=["user"])
 app.include_router(project_router, prefix="/api/project", tags=["project"])
 app.include_router(land_router, prefix="/api/land", tags=["land"])
 app.include_router(building_router, prefix="/api/building", tags=["building"])
+
 app.include_router(tip_router, prefix="/api/tip", tags=["tip"])
 app.include_router(expert_router, prefix="/api/expert", tags=["expert"])
-app.include_router(norm_router, prefix="/api/norm", tags=["norm"],
-                   dependencies=[Depends(get_current_admin)])
+
 app.include_router(land_category_router, prefix="/api/land-category", tags=["land category"])
 app.include_router(type_permission_router, prefix="/api/type-permission", tags=["type permission"])
 app.include_router(init_building_router, prefix="/api/init-building", tags=["init building"])
+app.include_router(norm_router, prefix="/api/norm", tags=["norm"])
 app.include_router(document_router, prefix="/api/document", tags=["document"])

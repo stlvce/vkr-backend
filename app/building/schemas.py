@@ -9,6 +9,8 @@ class BuildingIn(BaseModel):
     start_y: float
     width: int
     length: int
+    height: int
+    material: str
 
 
 class BuildingOut(BaseModel):
@@ -20,15 +22,18 @@ class BuildingOut(BaseModel):
     start_y: float
     width: int
     length: int
+    height: int
+    material: str
 
 
 class BuildingEdit(BaseModel):
-    id: int
     title: str
     start_x: float
     start_y: float
     width: int
     length: int
+    height: int
+    material: str
 
 
 class BuildingDelete(BaseModel):

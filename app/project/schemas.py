@@ -1,22 +1,25 @@
 from pydantic import BaseModel
-from typing import List
+from datetime import datetime
+
+from app.land.schemas import LandIn
+
+
+class ProjectCreate(BaseModel):
+    title: str
+    description: str | None = None
+    land: LandIn
 
 
 class ProjectIn(BaseModel):
     title: str
     description: str | None = None
-    width_parcel: int
-    length_parcel: int
-    neighbors_location: List[str]
 
 
 class ProjectEdit(BaseModel):
     id: int
     title: str
     description: str | None = None
-    width_parcel: int
-    length_parcel: int
-    neighbors_location: List[str]
+    changed_at: datetime | None = datetime.now()
 
 
 class ProjectOut(BaseModel):
@@ -24,7 +27,5 @@ class ProjectOut(BaseModel):
     user_id: int
     title: str
     description: str | None
-    width_parcel: int
-    length_parcel: int
-    neighbors_location: List[str]
-    created_at: str
+    created_at: datetime
+    changed_at: datetime

@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, Response
-from typing import Annotated
+from typing import Annotated, List
 
 from app.config.database import get_db
 from app.auth.security import get_current_user
@@ -20,10 +20,12 @@ async def create_building(new_building: BuildingIn, current_user: Annotated[User
     if not project:
         raise HTTPException(status_code=400, detail="PROJECT_NOT_FOUND")
 
-    return add_new_building(new_building, db)
+    add_new_building(new_building, db)
+
+    return Response(status_code=200)
 
 
-@building_router.get("/{project_id}")
+@building_router.get("/{project_id}", response_model=List[BuildingOut])
 async def get_buildings(project_id: int, current_user: Annotated[UserOut, Depends(get_current_user)],
                         db=Depends(get_db)):
     project = receive_project_by_id(current_user.id, project_id, db)
@@ -34,22 +36,26 @@ async def get_buildings(project_id: int, current_user: Annotated[UserOut, Depend
     return receive_buildings(project_id, db)
 
 
-@building_router.put("")
-async def edit_building_info(new_building_info: BuildingEdit,
+@building_router.put("/{project_id}/{building_id}")
+async def edit_building_info(project_id: int, building_id: int, building_data: BuildingEdit,
                              current_user: Annotated[UserOut, Depends(get_current_user)],
                              db=Depends(get_db)):
-    building = change_building_info(new_building_info, db)
+    project = receive_project_by_id(current_user.id, project_id, db)
+    if not project:
+        raise HTTPException(status_code=400, detail="PROJECT_NOT_FOUND")
+
+    building = change_building_info(building_id, building_data, db)
     if not building:
         raise HTTPException(status_code=400)
 
-    return building
+    return Response(status_code=200)
 
 
 @building_router.delete("")
 async def delete_building(building_data: BuildingDelete, current_user: Annotated[UserOut, Depends(get_current_user)],
                           db=Depends(get_db)):
-    is_removed = remove_building_by_id(current_user.id, building_data.project_id, current_user.id, db)
-    if is_removed:
-        return Response(content="OK")
+    is_removed = remove_building_by_id(current_user.id, building_data.project_id, building_data.id, db)
+    if not is_removed:
+        raise HTTPException(status_code=400)
 
-    raise HTTPException(status_code=400)
+    return Response(status_code=200)

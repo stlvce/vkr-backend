@@ -21,6 +21,9 @@ class RepositoryBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
 
     def get(self, obj_id: int, db: Session) -> ModelType | None:
         model_obj = db.get(self.model, obj_id)
+        if not model_obj:
+            return None
+
         return model_obj
 
     def get_all(self, db: Session, offset: int = 0,

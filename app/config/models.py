@@ -161,7 +161,7 @@ class NormModel(Base):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
 
-    relation: Mapped[str] = mapped_column(String(50), unique=True)
+    relation: Mapped[str] = mapped_column(String(50))
     description: Mapped[str] = mapped_column(String(100), unique=True)
     distance: Mapped[int] = mapped_column(SmallInteger)
 

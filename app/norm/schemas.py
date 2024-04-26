@@ -6,7 +6,8 @@ class NormBase(BaseModel):
     id: int
 
 
-class NormOut(NormBase):
+class NormOut(BaseModel):
+    id: int
     relation: List[str]
     distance: int
     description: str

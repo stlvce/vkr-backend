@@ -21,21 +21,3 @@ async def get_tips(project_id: int, current_user: Annotated[UserOut, Depends(get
         raise HTTPException(status_code=400)
 
     return receive_all_tips(project.id, db)
-
-
-@tip_router.post("/{project_id}/on-change-building-position", response_model=list[TipOut])
-async def on_change_building_position(project_id: int, current_user: Annotated[UserOut, Depends(get_current_user)],
-                                      db=Depends(get_db)):
-    return "ON CHANGE"
-
-
-@tip_router.post("/{project_id}/on-change-building-size", response_model=list[TipOut])
-async def on_change_building_size(project_id: int, current_user: Annotated[UserOut, Depends(get_current_user)],
-                                  db=Depends(get_db)):
-    return "ON CHANGE"
-
-
-@tip_router.post("/{project_id}/on-change-building-size", response_model=list[TipOut])
-async def on_change_building_size(project_id: int, current_user: Annotated[UserOut, Depends(get_current_user)],
-                                  db=Depends(get_db)):
-    return "ON CHANGE"

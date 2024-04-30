@@ -8,6 +8,7 @@ class Settings(BaseSettings, case_sensitive=True):
 class AppSettings(Settings):
     model_config = SettingsConfigDict(env_prefix="APP_")
 
+    URL: str
     SECRET_KEY: str
     ALGORITHM: str
     TOKEN_EXPIRE_MINUTES: int
@@ -26,5 +27,16 @@ class DatabaseSettings(Settings):
         return f"mysql+pymysql://{self.USER}:{self.PASSWORD}@{self.HOST}/{self.DB}"
 
 
+class ObjectStorageSettings(Settings):
+    model_config = SettingsConfigDict(env_prefix="STORAGE_")
+
+    BUCKET_NAME: str
+    ENDPOINT_URL: str
+    REGION_NAME: str
+    KEY_ID: str
+    SECRET_KEY: str
+
+
 app_settings = AppSettings()
 db_settings = DatabaseSettings()
+storage_settings = ObjectStorageSettings()

@@ -6,7 +6,7 @@ from app.auth.security import get_current_admin
 
 from .repository import type_permission_repository
 from .schemas import (TypePermissionIn, TypePermissionOut, TypePermissionOutWithCategoryOut, TypePermissionWithNorms,
-                      TypePermissionWithDocuments)
+                      TypePermissionWithDocuments, TypePermissionDocumentsNormsOut)
 
 type_permission_router = APIRouter()
 
@@ -36,21 +36,33 @@ async def get_all_type_permissions_with_category(db=Depends(get_db)):
 @type_permission_router.get("/{type_permission_id}", response_model=TypePermissionOut)
 async def get_type_permission_by_id(type_permission_id: int, db=Depends(get_db)):
     type_permission = type_permission_repository.get(type_permission_id, db)
-
     if not type_permission:
         raise HTTPException(status_code=400)
-
     return type_permission
 
 
 @type_permission_router.get("/{type_permission_id}/norms", response_model=TypePermissionWithNorms)
 async def get_type_permission_norms(type_permission_id: int, db=Depends(get_db)):
-    return type_permission_repository.get_norms(type_permission_id, db)
+    type_permission = type_permission_repository.get_norms(type_permission_id, db)
+    if not type_permission:
+        raise HTTPException(status_code=400, detail="TYPE_PERMISSION_NOT_FOUND")
+    return type_permission
 
 
 @type_permission_router.get("/{type_permission_id}/documents", response_model=TypePermissionWithDocuments)
 async def get_type_permission_documents(type_permission_id: int, db=Depends(get_db)):
-    return type_permission_repository.get_documents(type_permission_id, db)
+    type_permission = type_permission_repository.get_documents(type_permission_id, db)
+    if not type_permission:
+        raise HTTPException(status_code=400, detail="TYPE_PERMISSION_NOT_FOUND")
+    return type_permission
+
+
+@type_permission_router.get("/{type_permission_id}/documents/norms", response_model=TypePermissionDocumentsNormsOut)
+async def get_type_permission_documents_norms(type_permission_id: int, db=Depends(get_db)):
+    type_permission = type_permission_repository.get_documents_norms(type_permission_id, db)
+    if not type_permission:
+        raise HTTPException(status_code=400, detail="TYPE_PERMISSION_NOT_FOUND")
+    return type_permission
 
 
 @type_permission_router.get("/all/{land_category_id}", response_model=list[TypePermissionOut])

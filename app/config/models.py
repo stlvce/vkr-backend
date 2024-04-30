@@ -184,9 +184,9 @@ class DocumentModel(Base):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
 
-    title: Mapped[str] = mapped_column(String(40), unique=True)
-    file_type: Mapped[str] = mapped_column(String(30), unique=True)
-    link: Mapped[str] = mapped_column(String(100), unique=True)
+    title: Mapped[str] = mapped_column(String(90), unique=True)
+    file_type: Mapped[str] = mapped_column(String(30))
+    link: Mapped[str] = mapped_column(String(150), unique=True)
     uploaded_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, nullable=False)
 
     type_permissions: Mapped[List["TypePermissionModel"]] = relationship("TypePermissionModel",

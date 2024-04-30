@@ -1,11 +1,11 @@
 from sqlalchemy import select
 from sqlalchemy.orm import Session, selectinload
 
-from app.config.models import TypePermissionModel, LandCategoryModel
+from app.config.models import TypePermissionModel, LandCategoryModel, DocumentModel
 from app.config.repository_base import RepositoryBase
 
 from .schemas import (TypePermissionIn, TypePermissionOutWithCategoryOut, TypePermissionWithNorms,
-                      TypePermissionWithDocuments)
+                      TypePermissionWithDocuments, TypePermissionDocumentsNormsOut)
 
 
 class TypePermissionRepository(RepositoryBase[TypePermissionModel, TypePermissionIn, TypePermissionIn]):
@@ -24,20 +24,28 @@ class TypePermissionRepository(RepositoryBase[TypePermissionModel, TypePermissio
     def get_all_by_land_category_id(self, land_category_id: int, db: Session) -> list[TypePermissionModel]:
         return db.query(self.model).filter(self.model.land_category_id == land_category_id).all()
 
-    def get_norms(self, type_permission_id: int, db: Session) -> TypePermissionWithNorms:
-        query = select(TypePermissionModel).filter(
-            TypePermissionModel.id == type_permission_id).options(
-            selectinload(TypePermissionModel.norms))
+    def get_norms(self, type_permission_id: int, db: Session) -> TypePermissionWithNorms | None:
+        query = select(self.model).filter(
+            self.model.id == type_permission_id).options(
+            selectinload(self.model.norms))
         res = db.execute(query)
-        result = res.unique().scalars().all()
+        result = res.unique().scalars().first()
         return result
 
-    def get_documents(self, type_permission_id: int, db: Session) -> TypePermissionWithDocuments:
-        query = select(TypePermissionModel).filter(
-            TypePermissionModel.id == type_permission_id).options(
-            selectinload(TypePermissionModel.documents))
+    def get_documents(self, type_permission_id: int, db: Session) -> TypePermissionWithDocuments | None:
+        query = select(self.model).filter(
+            self.model.id == type_permission_id).options(
+            selectinload(self.model.documents))
         res = db.execute(query)
-        result = res.unique().scalars().all()
+        result = res.unique().scalars().first()
+        return result
+
+    def get_documents_norms(self, type_permission_id: int, db: Session) -> TypePermissionDocumentsNormsOut | None:
+        query = select(self.model).filter(
+            self.model.id == type_permission_id).options(
+            selectinload(self.model.documents).subqueryload(DocumentModel.norms))
+        res = db.execute(query)
+        result = res.unique().scalars().first()
         return result
 
 

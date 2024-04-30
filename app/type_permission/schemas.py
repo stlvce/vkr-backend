@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 
 from app.norm.schemas import NormOut
-from app.documents.schemas import DocumentOut
+from app.documents.schemas import DocumentOut, DocumentsNormsOut
 
 
 class TypePermissionOut(BaseModel):
@@ -25,3 +25,7 @@ class TypePermissionWithNorms(TypePermissionOut):
 
 class TypePermissionWithDocuments(TypePermissionOut):
     documents: list[DocumentOut]
+
+
+class TypePermissionDocumentsNormsOut(TypePermissionOut):
+    documents: list[DocumentsNormsOut]

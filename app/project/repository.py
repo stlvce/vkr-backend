@@ -1,3 +1,4 @@
+from sqlalchemy import select, text
 from sqlalchemy.orm import Session
 from typing import List
 
@@ -14,8 +15,14 @@ def add_new_project(user_id: int, project_data: ProjectIn, db: Session) -> Proje
     return new_project
 
 
-def receive_projects(user_id: int, db: Session) -> List[ProjectOut]:
-    return db.query(ProjectModel).filter(ProjectModel.user_id == user_id).all()
+def receive_projects(user_id: int, db: Session, skip: int = 0, limit: int = 100, sort_query: str = "id asc") -> List[
+    ProjectOut]:
+    q = select(ProjectModel).where(ProjectModel.user_id == user_id).offset(skip).limit(limit).order_by(text(sort_query))
+
+    result = db.execute(q)
+    curr = list(result.scalars())
+
+    return curr
 
 
 def receive_project_by_id(user_id: int, project_id: int, db: Session) -> ProjectOut | None:

@@ -1,35 +1,26 @@
 from fastapi import APIRouter, Depends, UploadFile, HTTPException, Response
 from fastapi.responses import StreamingResponse
-import boto3
-from botocore.client import Config
 import uuid
 
-from app.config.settings import storage_settings, app_settings
+from app.config.settings import app_settings
 from app.config.database import get_db
+from app.auth.security import get_current_admin
 
 from .schemas import DocumentIn, DocumentOut, DocumentEdit
 from .repository import document_repository
+from .service import upload_file, read_file, remove_file
 
 document_router = APIRouter()
 
-s3 = boto3.client(
-    's3',
-    endpoint_url=storage_settings.ENDPOINT_URL,
-    region_name=storage_settings.REGION_NAME,
-    aws_access_key_id=storage_settings.KEY_ID,
-    aws_secret_access_key=storage_settings.SECRET_KEY,
-    config=Config(s3={'addressing_style': 'path'})
-)
 
-
-@document_router.post("")
+@document_router.post("", dependencies=[Depends(get_current_admin)])
 async def create_document(file: UploadFile, db=Depends(get_db)):
     uuid_code = str(uuid.uuid4())
-    s3.upload_fileobj(file.file, storage_settings.BUCKET_NAME, uuid_code)
     document_repository.create(
-        DocumentIn(title=file.filename, file_type="ii", link=f'{app_settings.URL}/document/file/{uuid_code}'),
+        DocumentIn(title=file.filename, file_type="pdf", link=f'{app_settings.URL}/document/file/{uuid_code}'),
         db)
-    return {"url": storage_settings.ENDPOINT_URL + storage_settings.BUCKET_NAME + "/" + file.filename}
+    await upload_file(file, uuid_code)
+    return Response(status_code=200)
 
 
 @document_router.get("/all", response_model=list[DocumentOut])
@@ -45,15 +36,15 @@ async def get_document_by_id(document_id: int, db=Depends(get_db)):
     return document
 
 
-@document_router.get("/file/{file_name}")
-async def get_file(file_name: str):
-    data = s3.get_object(Bucket=storage_settings.BUCKET_NAME, Key=file_name).get('Body')
+@document_router.get("/file/{filename}")
+async def get_file(filename: str):
+    data = await read_file(filename)
     if data is None:
         raise HTTPException(status_code=400)
     return StreamingResponse(data)
 
 
-@document_router.put("/{document_id}")
+@document_router.put("/{document_id}", dependencies=[Depends(get_current_admin)])
 async def edit_document(document_id: int, document_data: DocumentEdit, db=Depends(get_db)):
     document = document_repository.update(document_id, document_data, db)
 
@@ -63,16 +54,13 @@ async def edit_document(document_id: int, document_data: DocumentEdit, db=Depend
     return Response(status_code=200)
 
 
-@document_router.delete("/{document_id}")
+@document_router.delete("/{document_id}", dependencies=[Depends(get_current_admin)])
 async def remove_document_by_id(document_id: int, db=Depends(get_db)):
     deleted_document = document_repository.delete(document_id, db)
 
     if not deleted_document:
         raise HTTPException(status_code=400)
 
-    try:
-        s3.delete_object(Bucket=storage_settings.BUCKET_NAME, Key=deleted_document.link.split("/")[-1])
-    except Exception as err:
-        raise HTTPException(status_code=400, detail="BUCKET_ERROR")
+    await remove_file(deleted_document.link.split("/")[-1])
 
     return Response(status_code=200)

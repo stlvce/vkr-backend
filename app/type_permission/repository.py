@@ -4,11 +4,11 @@ from sqlalchemy.orm import Session, selectinload
 from app.config.models import TypePermissionModel, LandCategoryModel, DocumentModel
 from app.config.repository_base import RepositoryBase
 
-from .schemas import (TypePermissionIn, TypePermissionOutWithCategoryOut, TypePermissionWithNorms,
+from .schemas import (TypePermissionIn, TypePermissionCreate, TypePermissionOutWithCategoryOut, TypePermissionWithNorms,
                       TypePermissionWithDocuments, TypePermissionDocumentsNormsOut)
 
 
-class TypePermissionRepository(RepositoryBase[TypePermissionModel, TypePermissionIn, TypePermissionIn]):
+class TypePermissionRepository(RepositoryBase[TypePermissionModel, TypePermissionCreate, TypePermissionIn]):
     def get_all_with_categories(self, db: Session) -> list[TypePermissionOutWithCategoryOut]:
         q = db.query(LandCategoryModel, self.model).join(self.model,
                                                          self.model.land_category_id == LandCategoryModel.id,
@@ -17,6 +17,7 @@ class TypePermissionRepository(RepositoryBase[TypePermissionModel, TypePermissio
         res = []
         for item, item2 in result:
             res.append({"id": item2.id, "land_category_id": item2.land_category_id, "title": item2.title,
+                        "image_url": item2.image_url,
                         "category_title": item.category_title, })
 
         return res

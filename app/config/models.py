@@ -117,6 +117,7 @@ class LandCategoryModel(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
 
     category_title: Mapped[str] = mapped_column(String(40))
+    image_url: Mapped[str] = mapped_column(String(150))
 
     type_permissions: Mapped[List["TypePermissionModel"]] = relationship("TypePermissionModel",
                                                                          back_populates="land_category",
@@ -131,6 +132,7 @@ class TypePermissionModel(Base):
     land_category_id: Mapped[int] = mapped_column(Integer, ForeignKey("land_categories.id"))
 
     title: Mapped[str] = mapped_column(String(40))
+    image_url: Mapped[str] = mapped_column(String(150))
 
     land_category: Mapped["LandCategoryModel"] = relationship("LandCategoryModel", back_populates="type_permissions")
     lands: Mapped[List["LandModel"]] = relationship("LandModel", back_populates="type_permission")

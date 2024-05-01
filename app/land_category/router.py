@@ -1,17 +1,26 @@
-from fastapi import APIRouter, Depends, HTTPException, Response
+from fastapi import APIRouter, Depends, HTTPException, Response, UploadFile, Form
+from uuid import uuid4
+from typing import Annotated
 
+from app.config.settings import app_settings
 from app.config.database import get_db
 from app.auth.security import get_current_admin
+from app.documents.service import upload_file, remove_file
 
 from .repository import land_category_repository
-from .schemas import LandCategoryIn, LandCategoryOut
+from .schemas import LandCategoryIn, LandCategoryOut, LandCategoryCreate
 
 land_category_router = APIRouter()
 
 
 @land_category_router.post("", dependencies=[Depends(get_current_admin)])
-async def create_land_category(land_category_data: LandCategoryIn, db=Depends(get_db)):
-    land_category_repository.create(land_category_data, db)
+async def create_land_category(land_category_title: Annotated[str, Form()], file: UploadFile, db=Depends(get_db)):
+    uuid_code = str(uuid4())
+    land_category_repository.create(
+        LandCategoryCreate(category_title=land_category_title,
+                           image_url=f'{app_settings.URL}/document/file/{uuid_code}'), db)
+
+    await upload_file(file, uuid_code)
     return Response(status_code=200)
 
 
@@ -46,5 +55,7 @@ async def delete_land_category(land_category_id: int, db=Depends(get_db)):
 
     if not deleted_land_category:
         raise HTTPException(status_code=400)
+
+    await remove_file(deleted_land_category.image_url.split("/")[-1])
 
     return Response(status_code=200)

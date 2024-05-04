@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 from typing import List
+from enum import Enum
 from datetime import datetime
 
 
@@ -18,8 +19,9 @@ class DocumentOut(BaseModel):
     uploaded_at: datetime
 
 
-class NormBase(BaseModel):
-    id: int
+class PriorityEnum(str, Enum):
+    low = 'low'
+    high = 'high'
 
 
 class NormOut(BaseModel):
@@ -27,6 +29,7 @@ class NormOut(BaseModel):
     relation: str
     distance: int
     description: str
+    priority: PriorityEnum
 
 
 class NormIn(BaseModel):
@@ -35,12 +38,14 @@ class NormIn(BaseModel):
     relation: List[str]
     distance: int
     description: str
+    priority: PriorityEnum
 
 
 class NormUpdate(BaseModel):
     relation: str
     distance: int
     description: str
+    priority: PriorityEnum
 
 
 class NormWithTypePermissions(NormOut):

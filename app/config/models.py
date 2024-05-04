@@ -95,6 +95,7 @@ class TipModel(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     project_id: Mapped[int] = mapped_column(Integer, ForeignKey("projects.id"))
     norm_id: Mapped[int] = mapped_column(Integer, ForeignKey("norms.id"))
+    priority: Mapped[int] = mapped_column(String(10))
 
     description: Mapped[str] = mapped_column(String(100))
 
@@ -116,7 +117,7 @@ class LandCategoryModel(Base):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
 
-    category_title: Mapped[str] = mapped_column(String(40))
+    category_title: Mapped[str] = mapped_column(String(40), unique=True)
     image_url: Mapped[str] = mapped_column(String(150))
 
     type_permissions: Mapped[List["TypePermissionModel"]] = relationship("TypePermissionModel",
@@ -132,6 +133,7 @@ class TypePermissionModel(Base):
     land_category_id: Mapped[int] = mapped_column(Integer, ForeignKey("land_categories.id"))
 
     title: Mapped[str] = mapped_column(String(40))
+    code: Mapped[str] = mapped_column(String(10))
     image_url: Mapped[str] = mapped_column(String(150))
 
     land_category: Mapped["LandCategoryModel"] = relationship("LandCategoryModel", back_populates="type_permissions")
@@ -166,6 +168,7 @@ class NormModel(Base):
     relation: Mapped[str] = mapped_column(String(50))
     description: Mapped[str] = mapped_column(String(100), unique=True)
     distance: Mapped[int] = mapped_column(SmallInteger)
+    priority: Mapped[int] = mapped_column(String(10))
 
     tips: Mapped[List["TipModel"]] = relationship("TipModel", back_populates="norm", cascade="all, delete-orphan")
     type_permissions: Mapped[List["TypePermissionModel"]] = relationship(secondary="type_permission_norms",

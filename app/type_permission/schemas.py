@@ -9,6 +9,7 @@ class TypePermissionOut(BaseModel):
     land_category_id: int
     title: str
     image_url: str
+    code: str
 
 
 class TypePermissionOutWithCategoryOut(TypePermissionOut):
@@ -18,10 +19,12 @@ class TypePermissionOutWithCategoryOut(TypePermissionOut):
 class TypePermissionIn(BaseModel):
     land_category_id: int
     title: str
+    code: str
 
 
 class TypePermissionCreate(TypePermissionIn):
     image_url: str
+    code: str
 
 
 class TypePermissionWithNorms(TypePermissionOut):

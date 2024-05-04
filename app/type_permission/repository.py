@@ -18,6 +18,7 @@ class TypePermissionRepository(RepositoryBase[TypePermissionModel, TypePermissio
         for item, item2 in result:
             res.append({"id": item2.id, "land_category_id": item2.land_category_id, "title": item2.title,
                         "image_url": item2.image_url,
+                        "code:": item2.code,
                         "category_title": item.category_title, })
 
         return res

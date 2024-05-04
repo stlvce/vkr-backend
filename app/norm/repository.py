@@ -1,7 +1,7 @@
 from sqlalchemy import select
 from sqlalchemy.orm import Session, selectinload
 
-from app.config.models import NormModel
+from app.config.models import NormModel, DocumentNorms, TypePermissionNorms
 from app.config.repository_base import RepositoryBase, CreateSchemaType
 
 from .schemas import NormIn, NormOut, NormUpdate, NormWithTypePermissions, NormWithTypeDocuments
@@ -14,6 +14,12 @@ class NormRepository(RepositoryBase[NormModel, NormIn, NormUpdate]):
         db.add(db_norm)
         db.commit()
         db.refresh(db_norm)
+
+        db_types_norms = TypePermissionNorms(type_permission_id=obj_in.type_permission_id, norm_id=db_norm.id)
+        db_documents_norms = DocumentNorms(document_id=obj_in.document_id, norm_id=db_norm.id)
+        db.add_all([db_types_norms, db_documents_norms])
+        db.commit()
+
         return db_norm
 
     def get_by_relation(self, relation: str, db: Session) -> NormOut | None:

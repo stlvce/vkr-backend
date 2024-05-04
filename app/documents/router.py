@@ -36,6 +36,14 @@ async def get_document_by_id(document_id: int, db=Depends(get_db)):
     return document
 
 
+@document_router.get("/{document_id}/type-permissions-norms")
+async def get_document_by_id_types_and_norms(document_id: int, db=Depends(get_db)):
+    document = document_repository.get_type_permissions_norms(document_id, db)
+    if not document:
+        raise HTTPException(status_code=400)
+    return document
+
+
 @document_router.get("/file/{filename}")
 async def get_file(filename: str):
     data = await read_file(filename)

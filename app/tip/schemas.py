@@ -9,12 +9,14 @@ class PriorityEnum(str, Enum):
 
 class TipOut(BaseModel):
     id: int
+    norm_id: int
     project_id: int
-    tip_text: str
+    description: str
     priority: PriorityEnum
 
 
 class TipIn(BaseModel):
     project_id: int
-    tip_text: str
+    norm_id: int
+    description: str
     priority: PriorityEnum

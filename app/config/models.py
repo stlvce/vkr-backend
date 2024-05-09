@@ -75,6 +75,7 @@ class BuildingModel(Base):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     project_id: Mapped[int] = mapped_column(Integer, ForeignKey("projects.id"))
+    material_id: Mapped[int] = mapped_column(Integer, ForeignKey("materials.id"))
 
     type: Mapped[str] = mapped_column(String(30))
     title: Mapped[str] = mapped_column(String(40))
@@ -83,9 +84,9 @@ class BuildingModel(Base):
     width: Mapped[int] = mapped_column(SmallInteger)
     length: Mapped[int] = mapped_column(SmallInteger)
     height: Mapped[int] = mapped_column(SmallInteger)
-    material: Mapped[str] = mapped_column(String(40))
 
     project: Mapped["ProjectModel"] = relationship("ProjectModel", back_populates="buildings")
+    material: Mapped["MaterialModel"] = relationship("MaterialModel", back_populates="buildings")
     tips: Mapped[List["TipModel"]] = relationship("TipModel", secondary="building_tips", back_populates="buildings")
 
 
@@ -95,9 +96,10 @@ class TipModel(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     project_id: Mapped[int] = mapped_column(Integer, ForeignKey("projects.id"))
     norm_id: Mapped[int] = mapped_column(Integer, ForeignKey("norms.id"))
-    priority: Mapped[int] = mapped_column(String(10))
 
     description: Mapped[str] = mapped_column(String(100))
+    priority: Mapped[int] = mapped_column(String(10))
+    current_distance: Mapped[int] = mapped_column(SmallInteger)
 
     project: Mapped["ProjectModel"] = relationship("ProjectModel", back_populates="tips")
     buildings = relationship("BuildingModel", secondary="building_tips", back_populates="tips")
@@ -155,6 +157,10 @@ class InitBuildingModel(Base):
 
     type: Mapped[str] = mapped_column(String(30), unique=True)
     title: Mapped[str] = mapped_column(String(40))
+    min_length: Mapped[int] = mapped_column(SmallInteger)
+    max_length: Mapped[int] = mapped_column(SmallInteger)
+    min_width: Mapped[int] = mapped_column(SmallInteger)
+    max_width: Mapped[int] = mapped_column(SmallInteger)
 
     type_permission: Mapped["TypePermissionModel"] = relationship("TypePermissionModel",
                                                                   back_populates="init_buildings")
@@ -214,3 +220,14 @@ class TypePermissionDocuments(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     type_permission_id: Mapped[int] = mapped_column(Integer, ForeignKey("type_permissions.id"))
     document_id: Mapped[int] = mapped_column(Integer, ForeignKey("documents.id"))
+
+
+class MaterialModel(Base):
+    __tablename__ = "materials"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+
+    material_title: Mapped[str] = mapped_column(String(90), unique=True)
+    additional_distance: Mapped[int] = mapped_column(SmallInteger)
+
+    buildings: Mapped[List["BuildingModel"]] = relationship("BuildingModel", back_populates="material")

@@ -17,7 +17,7 @@ type_permission_router = APIRouter()
 
 
 @type_permission_router.post("", dependencies=[Depends(get_current_admin)])
-async def create_type_permission(land_category_id: Annotated[int, Form()], title: Annotated[str, Form()],
+async def create_type_permission(land_category_id: Annotated[int, Form()], title: Annotated[str, Form()],code: Annotated[str, Form()],
                                  file: UploadFile, db=Depends(get_db)):
     land_category = land_category_repository.get(land_category_id, db)
     if not land_category:
@@ -25,6 +25,7 @@ async def create_type_permission(land_category_id: Annotated[int, Form()], title
 
     uuid_code = str(uuid4())
     type_permission_repository.create(TypePermissionCreate(land_category_id=land_category_id, title=title,
+    code=code,
                                                            image_url=f'{app_settings.URL}/document/file/{uuid_code}'),
                                       db)
     await upload_file(file, uuid_code)
@@ -37,8 +38,7 @@ async def get_all_type_permissions(db=Depends(get_db)):
     return type_permission_repository.get_all(db)
 
 
-@type_permission_router.get("/all", dependencies=[Depends(get_current_admin)],
-                            response_model=list[TypePermissionOutWithCategoryOut])
+@type_permission_router.get("/all", dependencies=[Depends(get_current_admin)])
 async def get_all_type_permissions_with_category(db=Depends(get_db)):
     return type_permission_repository.get_all_with_categories(db)
 

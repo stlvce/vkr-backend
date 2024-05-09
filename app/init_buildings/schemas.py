@@ -9,5 +9,6 @@ class InitBuildingCreate(BaseModel):
 
 class InitBuildingOut(BaseModel):
     id: int
+    type_permission_id: int
     title: str
     type: str

@@ -26,4 +26,5 @@ async def remove_file(filename: str):
     try:
         s3.delete_object(Bucket=storage_settings.BUCKET_NAME, Key=filename)
     except Exception as err:
+        # TODO сделать нормальную обработку ошибки
         raise HTTPException(status_code=400, detail="BUCKET_ERROR")

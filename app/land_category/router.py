@@ -2,7 +2,6 @@ from fastapi import APIRouter, Depends, HTTPException, Response, UploadFile, For
 from uuid import uuid4
 from typing import Annotated
 
-from app.config.settings import app_settings
 from app.config.database import get_db
 from app.auth.security import get_current_admin
 from app.documents.service import upload_file, remove_file
@@ -18,7 +17,7 @@ async def create_land_category(land_category_title: Annotated[str, Form()], file
     uuid_code = str(uuid4())
     land_category_repository.create(
         LandCategoryCreate(category_title=land_category_title,
-                           image_url=f'{app_settings.URL}/document/file/{uuid_code}'), db)
+                           image_url=uuid_code), db)
 
     await upload_file(file, uuid_code)
     return Response(status_code=200)
@@ -56,6 +55,6 @@ async def delete_land_category(land_category_id: int, db=Depends(get_db)):
     if not deleted_land_category:
         raise HTTPException(status_code=400)
 
-    await remove_file(deleted_land_category.image_url.split("/")[-1])
+    await remove_file(deleted_land_category.image_url)
 
     return Response(status_code=200)

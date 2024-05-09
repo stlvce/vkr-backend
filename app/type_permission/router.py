@@ -2,7 +2,6 @@ from fastapi import APIRouter, Depends, HTTPException, Response, Form, UploadFil
 from typing import Annotated
 from uuid import uuid4
 
-from app.config.settings import app_settings
 from app.config.database import get_db
 from app.land_category.repository import land_category_repository
 from app.auth.security import get_current_admin
@@ -25,9 +24,7 @@ async def create_type_permission(land_category_id: Annotated[int, Form()], title
 
     uuid_code = str(uuid4())
     type_permission_repository.create(TypePermissionCreate(land_category_id=land_category_id, title=title,
-    code=code,
-                                                           image_url=f'{app_settings.URL}/document/file/{uuid_code}'),
-                                      db)
+    code=code, image_url=uuid_code), db)
     await upload_file(file, uuid_code)
 
     return Response(status_code=200)
@@ -101,6 +98,6 @@ async def delete_land_category(type_permission_id: int, db=Depends(get_db)):
     if not deleted_type_permission:
         raise HTTPException(status_code=400)
 
-    await remove_file(deleted_type_permission.image_url.split("/")[-1])
+    await remove_file(deleted_type_permission.image_url)
 
     return Response(status_code=200)

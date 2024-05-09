@@ -2,7 +2,6 @@ from fastapi import APIRouter, Depends, UploadFile, HTTPException, Response
 from fastapi.responses import StreamingResponse
 import uuid
 
-from app.config.settings import app_settings
 from app.config.database import get_db
 from app.auth.security import get_current_admin
 
@@ -17,7 +16,7 @@ document_router = APIRouter()
 async def create_document(file: UploadFile, db=Depends(get_db)):
     uuid_code = str(uuid.uuid4())
     document_repository.create(
-        DocumentIn(title=file.filename, file_type="pdf", link=f'{app_settings.URL}/document/file/{uuid_code}'),
+        DocumentIn(title=file.filename.split(".")[0], file_type="pdf", link=uuid_code),
         db)
     await upload_file(file, uuid_code)
     return Response(status_code=200)
@@ -44,9 +43,9 @@ async def get_document_by_id_types_and_norms(document_id: int, db=Depends(get_db
     return document
 
 
-@document_router.get("/file/{filename}")
-async def get_file(filename: str):
-    data = await read_file(filename)
+@document_router.get("/file/{file_link}")
+async def get_file(file_link: str):
+    data = await read_file(file_link)
     if data is None:
         raise HTTPException(status_code=400)
     return StreamingResponse(data)
@@ -69,6 +68,6 @@ async def remove_document_by_id(document_id: int, db=Depends(get_db)):
     if not deleted_document:
         raise HTTPException(status_code=400)
 
-    await remove_file(deleted_document.link.split("/")[-1])
+    await remove_file(deleted_document.link)
 
     return Response(status_code=200)

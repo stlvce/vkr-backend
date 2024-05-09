@@ -22,13 +22,13 @@ def change_building_info(building_id: int, new_building_info: BuildingEdit, db: 
     building = db.get(BuildingModel, building_id)
     if not building:
         return None
+    setattr(building, "material_id", new_building_info.material_id)
     setattr(building, "title", new_building_info.title)
     setattr(building, "start_x", new_building_info.start_x)
     setattr(building, "start_y", new_building_info.start_y)
     setattr(building, "width", new_building_info.width)
     setattr(building, "length", new_building_info.length)
     setattr(building, "height", new_building_info.height)
-    setattr(building, "material", new_building_info.material)
 
     db.commit()
     db.refresh(building)

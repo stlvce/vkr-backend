@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 from datetime import datetime
 
-from app.land.schemas import LandIn
+from app.land.schemas import LandIn, LandOut
 
 
 class ProjectCreate(BaseModel):
@@ -27,5 +27,6 @@ class ProjectOut(BaseModel):
     user_id: int
     title: str
     description: str | None
+    land: LandOut
     created_at: datetime
     changed_at: datetime

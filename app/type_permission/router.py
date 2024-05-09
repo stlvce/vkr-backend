@@ -18,16 +18,20 @@ type_permission_router = APIRouter()
 @type_permission_router.post("", dependencies=[Depends(get_current_admin)])
 async def create_type_permission(land_category_id: Annotated[int, Form()], title: Annotated[str, Form()],code: Annotated[str, Form()],
                                  file: UploadFile, db=Depends(get_db)):
-    land_category = land_category_repository.get(land_category_id, db)
-    if not land_category:
-        raise HTTPException(status_code=400, detail="LAND_CATEGORY_NOT_FOUND")
+    file_type = file.filename.split(".")[-1]
+    if file_type != "jpeg" or file_type != "png" or file_type != "jpg":
+        land_category = land_category_repository.get(land_category_id, db)
+        if not land_category:
+            raise HTTPException(status_code=400, detail="LAND_CATEGORY_NOT_FOUND")
 
-    uuid_code = str(uuid4())
-    type_permission_repository.create(TypePermissionCreate(land_category_id=land_category_id, title=title,
-    code=code, image_url=uuid_code), db)
-    await upload_file(file, uuid_code)
+        uuid_code = str(uuid4())
+        type_permission_repository.create(TypePermissionCreate(land_category_id=land_category_id, title=title,
+        code=code, image_url=uuid_code), db)
+        await upload_file(file, uuid_code)
 
-    return Response(status_code=200)
+        return Response(status_code=200)
+
+    raise HTTPException(status_code=400, detail="ONLY_PNG_JPG_JPEG")
 
 
 @type_permission_router.get("", response_model=list[TypePermissionOut])

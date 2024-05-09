@@ -14,13 +14,17 @@ land_category_router = APIRouter()
 
 @land_category_router.post("", dependencies=[Depends(get_current_admin)])
 async def create_land_category(land_category_title: Annotated[str, Form()], file: UploadFile, db=Depends(get_db)):
-    uuid_code = str(uuid4())
-    land_category_repository.create(
-        LandCategoryCreate(category_title=land_category_title,
-                           image_url=uuid_code), db)
+    file_type = file.filename.split(".")[-1]
+    if file_type == "jpeg" or file_type == "png" or file_type == "jpg":
+        uuid_code = str(uuid4())
+        land_category_repository.create(
+            LandCategoryCreate(category_title=land_category_title,
+                               image_url=uuid_code), db)
 
-    await upload_file(file, uuid_code)
-    return Response(status_code=200)
+        await upload_file(file, uuid_code)
+        return Response(status_code=200)
+
+    raise HTTPException(status_code=400, detail="ONLY_PNG_JPG_JPEG")
 
 
 @land_category_router.get("", response_model=list[LandCategoryOut])

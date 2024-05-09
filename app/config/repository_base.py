@@ -15,9 +15,14 @@ class RepositoryBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         self.model = model
 
     def create(self, obj_in: CreateSchemaType, db: Session):
-        db_obj = self.model(**obj_in.dict())
-        db.add(db_obj)
-        db.commit()
+        try:
+            db_obj = self.model(**obj_in.dict())
+            db.add(db_obj)
+            db.commit()
+            return True
+        except Exception as e:
+            # TODO сделать нормальную обработку
+            return None
 
     def get(self, obj_id: int, db: Session) -> ModelType | None:
         model_obj = db.get(self.model, obj_id)

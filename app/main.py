@@ -1,9 +1,8 @@
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.config.database import engine
 from app.config.models import Base
-from app.auth.security import get_current_admin
 from app.user.router import user_router
 from app.auth.router import auth_router
 from app.project.router import project_router
@@ -16,6 +15,7 @@ from app.land_category.router import land_category_router
 from app.type_permission.router import type_permission_router
 from app.init_buildings.router import init_building_router
 from app.documents.router import document_router
+from app.material.router import material_router
 
 app = FastAPI(docs_url="/api/docs",
               swagger_ui_parameters={"operationsSorter": "method", "syntaxHighlight.theme": "obsidian"})
@@ -44,3 +44,4 @@ app.include_router(type_permission_router, prefix="/api/type-permission", tags=[
 app.include_router(init_building_router, prefix="/api/init-building", tags=["init building"])
 app.include_router(norm_router, prefix="/api/norm", tags=["norm"])
 app.include_router(document_router, prefix="/api/document", tags=["document"])
+app.include_router(material_router, prefix="/api/material", tags=["material"])

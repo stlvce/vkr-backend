@@ -1,10 +1,14 @@
 from pydantic import BaseModel
 
 
-class InitBuildingCreate(BaseModel):
+class InitBuildingIn(BaseModel):
+    type_permission_id: int
     title: str
     type: str
-    # type_permissions: int | None = None
+    min_length: int
+    max_length: int
+    min_width: int
+    max_width: int
 
 
 class InitBuildingOut(BaseModel):
@@ -12,3 +16,7 @@ class InitBuildingOut(BaseModel):
     type_permission_id: int
     title: str
     type: str
+    min_length: int
+    max_length: int
+    min_width: int
+    max_width: int

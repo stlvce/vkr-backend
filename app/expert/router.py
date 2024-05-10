@@ -39,7 +39,9 @@ async def expert_tips(body: ExpertIn, db=Depends(get_db)):
                 result.append(TipExpertOut(norm_id=border_norm.id,
                                            description=border_norm.description,
                                            priority=border_norm.priority,
-                                           current_distance=border_distance)
+                                           current_distance=border_distance,
+                                           type=border_norm.type
+                                           )
                               )
                 break
 
@@ -68,7 +70,9 @@ async def expert_tips(body: ExpertIn, db=Depends(get_db)):
             result.append(TipExpertOut(norm_id=norm.id,
                                        description=norm.description,
                                        priority=norm.priority,
-                                       current_distance=calc_distance)
+                                       current_distance=calc_distance,
+                                       type=norm.type
+                                       )
                           )
 
     return result

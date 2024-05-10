@@ -31,3 +31,4 @@ class TipExpertOut(BaseModel):
     description: str
     priority: PriorityEnum
     current_distance: int
+    type: str

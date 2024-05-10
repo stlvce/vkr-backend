@@ -24,12 +24,18 @@ class PriorityEnum(str, Enum):
     high = 'high'
 
 
+class TypeEnum(str, Enum):
+    sanitary = 'sanitary'
+    fire_safety = 'fire_safety'
+
+
 class NormOut(BaseModel):
     id: int
     relation: str
     distance: int
     description: str
     priority: PriorityEnum
+    type: TypeEnum
 
 
 class NormIn(BaseModel):
@@ -39,6 +45,7 @@ class NormIn(BaseModel):
     distance: int
     description: str
     priority: PriorityEnum
+    type: TypeEnum
 
 
 class NormUpdate(BaseModel):
@@ -46,6 +53,7 @@ class NormUpdate(BaseModel):
     distance: int
     description: str
     priority: PriorityEnum
+    type: TypeEnum
 
 
 class NormWithTypePermissions(NormOut):

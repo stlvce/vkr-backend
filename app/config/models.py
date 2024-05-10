@@ -100,6 +100,7 @@ class TipModel(Base):
     description: Mapped[str] = mapped_column(String(100))
     priority: Mapped[int] = mapped_column(String(10))
     current_distance: Mapped[int] = mapped_column(SmallInteger)
+    type: Mapped[str] = mapped_column(String(30))
 
     project: Mapped["ProjectModel"] = relationship("ProjectModel", back_populates="tips")
     buildings = relationship("BuildingModel", secondary="building_tips", back_populates="tips")
@@ -175,6 +176,7 @@ class NormModel(Base):
     description: Mapped[str] = mapped_column(String(100), unique=True)
     distance: Mapped[int] = mapped_column(SmallInteger)
     priority: Mapped[int] = mapped_column(String(10))
+    type: Mapped[str] = mapped_column(String(30))
 
     tips: Mapped[List["TipModel"]] = relationship("TipModel", back_populates="norm", cascade="all, delete-orphan")
     type_permissions: Mapped[List["TypePermissionModel"]] = relationship(secondary="type_permission_norms",

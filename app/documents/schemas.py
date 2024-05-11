@@ -27,8 +27,8 @@ class DocumentsNormsOut(DocumentOut):
 
 
 class DocTypePermissionPin(BaseModel):
-    type_permission_id: int
     document_id: int
+    type_permission_id: int
 
 
 class DocNormPin(BaseModel):

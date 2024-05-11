@@ -68,9 +68,9 @@ async def type_permission_pin(pin_data: list[NormTypePermissionPin], db=Depends(
     return Response(status_code=200)
 
 
-@norm_router.delete("/type-permission-pin/{pin_id}", dependencies=[Depends(get_current_admin)])
-async def type_permission_pin_delete(pin_id: int, db=Depends(get_db)):
-    result = norm_repository.type_permission_pin_delete(pin_id, db)
+@norm_router.delete("/type-permission-pin", dependencies=[Depends(get_current_admin)])
+async def type_permission_pin_delete(pin_data: NormTypePermissionPin, db=Depends(get_db)):
+    result = norm_repository.type_permission_pin_delete(pin_data, db)
 
     if not result:
         raise HTTPException(status_code=400)

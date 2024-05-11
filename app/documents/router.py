@@ -78,9 +78,9 @@ async def document_norm_pin(pin_data: DocNormPin, db=Depends(get_db)):
     return Response(status_code=200)
 
 
-@document_router.delete("/type-permission-pin/{pin_id}", dependencies=[Depends(get_current_admin)])
-async def type_permission_pin_delete(pin_id: int, db=Depends(get_db)):
-    result = document_repository.type_permission_pin_delete(pin_id, db)
+@document_router.delete("/type-permission-pin", dependencies=[Depends(get_current_admin)])
+async def type_permission_pin_delete(pin_data: DocTypePermissionPin, db=Depends(get_db)):
+    result = document_repository.type_permission_pin_delete(pin_data, db)
 
     if not result:
         raise HTTPException(status_code=400)
@@ -88,16 +88,15 @@ async def type_permission_pin_delete(pin_id: int, db=Depends(get_db)):
     return Response(status_code=200)
 
 
-@document_router.delete("/norm-pin/{pin_id}", dependencies=[Depends(get_current_admin)])
-async def norm_pin_delete(pin_id: int, db=Depends(get_db)):
-    result = document_repository.norm_pin_delete(pin_id, db)
+@document_router.delete("/norm-pin", dependencies=[Depends(get_current_admin)])
+async def norm_pin_delete(pin_data: DocNormPin, db=Depends(get_db)):
+    result = document_repository.norm_pin_delete(pin_data, db)
 
     if not result:
         raise HTTPException(status_code=400)
 
 
     return Response(status_code=200)
-
 
 
 @document_router.delete("/{document_id}", dependencies=[Depends(get_current_admin)])

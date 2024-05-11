@@ -53,8 +53,11 @@ class NormRepository(RepositoryBase[NormModel, NormIn, NormUpdate]):
         db.add_all(commit_list)
         db.commit()
 
-    def type_permission_pin_delete(self, pin_id: int, db: Session) -> NormTypePermissionPin | None:
-        obj = db.get(TypePermissionNorms, pin_id)
+    def type_permission_pin_delete(self, pin_data: NormTypePermissionPin, db: Session) -> NormTypePermissionPin | None:
+        q = select(TypePermissionNorms).where(TypePermissionNorms.type_permission_id == pin_data.type_permission_id,
+                                              TypePermissionNorms.norm_id == pin_data.norm_id)
+        result = db.execute(q)
+        obj = result.scalar()
 
         if not obj:
             return None

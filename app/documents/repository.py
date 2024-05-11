@@ -22,8 +22,11 @@ class DocumentRepository(RepositoryBase[DocumentModel, DocumentIn, DocumentEdit]
         db.add(db_doc_type_permission)
         db.commit()
 
-    def type_permission_pin_delete(self, pin_id: int, db: Session) -> TypePermissionDocuments | None:
-        obj = db.get(TypePermissionDocuments, pin_id)
+    def type_permission_pin_delete(self, pin_data: DocTypePermissionPin, db: Session) -> TypePermissionDocuments | None:
+        q = select(TypePermissionDocuments).where(TypePermissionDocuments.type_permission_id == pin_data.type_permission_id,
+                                              TypePermissionDocuments.document_id == pin_data.document_id)
+        result = db.execute(q)
+        obj = result.scalar()
 
         if not obj:
             return None
@@ -38,9 +41,11 @@ class DocumentRepository(RepositoryBase[DocumentModel, DocumentIn, DocumentEdit]
         db.add(db_documents_norms)
         db.commit()
 
-
-    def norm_pin_delete(self, pin_id: int, db: Session):
-        obj = db.get(DocumentNorms, pin_id)
+    def norm_pin_delete(self, pin_data: DocNormPin, db: Session):
+        q = select(DocumentNorms).where(DocumentNorms.document_id == pin_data.document_id,
+                                              DocumentNorms.norm_id == pin_data.norm_id)
+        result = db.execute(q)
+        obj = result.scalar()
 
         if not obj:
             return None

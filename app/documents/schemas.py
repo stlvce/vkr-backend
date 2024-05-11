@@ -24,3 +24,13 @@ class DocumentEdit(BaseModel):
 
 class DocumentsNormsOut(DocumentOut):
     norms: list[NormOut]
+
+
+class DocTypePermissionPin(BaseModel):
+    type_permission_id: int
+    document_id: int
+
+
+class DocNormPin(BaseModel):
+    document_id: int
+    norm_id: int

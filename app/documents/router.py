@@ -5,7 +5,7 @@ import uuid
 from app.config.database import get_db
 from app.auth.security import get_current_admin
 
-from .schemas import DocumentIn, DocumentOut, DocumentEdit
+from .schemas import DocumentIn, DocumentOut, DocumentEdit, DocTypePermissionPin, DocNormPin
 from .repository import document_repository
 from .service import upload_file, read_file, remove_file
 
@@ -62,6 +62,42 @@ async def edit_document(document_id: int, document_data: DocumentEdit, db=Depend
         raise HTTPException(status_code=400)
 
     return Response(status_code=200)
+
+
+@document_router.post("/type-permission-pin", dependencies=[Depends(get_current_admin)])
+async def type_permission_document_pin(pin_data: DocTypePermissionPin, db=Depends(get_db)):
+    document_repository.type_permission_pin(pin_data, db)
+
+    return Response(status_code=200)
+
+
+@document_router.post("/norm-pin", dependencies=[Depends(get_current_admin)])
+async def document_norm_pin(pin_data: DocNormPin, db=Depends(get_db)):
+    document_repository.norm_pin(pin_data, db)
+
+    return Response(status_code=200)
+
+
+@document_router.delete("/type-permission-pin/{pin_id}", dependencies=[Depends(get_current_admin)])
+async def type_permission_document_pin(pin_id: int, db=Depends(get_db)):
+    result = document_repository.type_permission_pin_delete(pin_id, db)
+
+    if not result:
+        raise HTTPException(status_code=400)
+
+    return Response(status_code=200)
+
+
+@document_router.delete("/norm-pin/{pin_id}", dependencies=[Depends(get_current_admin)])
+async def document_norm_pin(pin_id: int, db=Depends(get_db)):
+    result = document_repository.norm_pin_delete(pin_id, db)
+
+    if not result:
+        raise HTTPException(status_code=400)
+
+
+    return Response(status_code=200)
+
 
 
 @document_router.delete("/{document_id}", dependencies=[Depends(get_current_admin)])

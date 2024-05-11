@@ -1,13 +1,11 @@
 from pydantic import BaseModel
 
 
-class BuildingIn(BaseModel):
+class BuildingCreate(BaseModel):
     project_id: int
     material_id: int
     type: str
     title: str
-    start_x: float
-    start_y: float
     width: int
     length: int
     height: int

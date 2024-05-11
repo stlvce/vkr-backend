@@ -6,14 +6,14 @@ from app.auth.security import get_current_user
 from app.user.schemas import UserOut
 from app.project.repository import receive_project_by_id
 
-from .schemas import BuildingIn, BuildingOut, BuildingEdit, BuildingDelete
+from .schemas import BuildingCreate, BuildingOut, BuildingEdit, BuildingDelete
 from .repository import receive_buildings, add_new_building, change_building_info, remove_building_by_id
 
 building_router = APIRouter()
 
 
 @building_router.post("")
-async def create_building(new_building: BuildingIn, current_user: Annotated[UserOut, Depends(get_current_user)],
+async def create_building(new_building: BuildingCreate, current_user: Annotated[UserOut, Depends(get_current_user)],
                           db=Depends(get_db)):
     project = receive_project_by_id(current_user.id, new_building.project_id, db)
 

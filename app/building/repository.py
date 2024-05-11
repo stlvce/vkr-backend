@@ -3,10 +3,10 @@ from sqlalchemy.orm import Session
 from app.config.models import BuildingModel
 from app.project.repository import receive_project_by_id
 
-from .schemas import BuildingIn, BuildingOut, BuildingEdit
+from .schemas import BuildingCreate, BuildingOut, BuildingEdit
 
 
-def add_new_building(building_data: BuildingIn, db: Session) -> BuildingOut:
+def add_new_building(building_data: BuildingCreate, db: Session) -> BuildingOut:
     new_building = BuildingModel(**building_data.dict())
     db.add(new_building)
     db.commit()

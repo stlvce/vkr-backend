@@ -79,8 +79,8 @@ class BuildingModel(Base):
 
     type: Mapped[str] = mapped_column(String(30))
     title: Mapped[str] = mapped_column(String(40))
-    start_x: Mapped[float] = mapped_column(Float)
-    start_y: Mapped[float] = mapped_column(Float)
+    start_x: Mapped[float] = mapped_column(Float, nullable=True, default=None)
+    start_y: Mapped[float] = mapped_column(Float, nullable=True, default=None)
     width: Mapped[int] = mapped_column(SmallInteger)
     length: Mapped[int] = mapped_column(SmallInteger)
     height: Mapped[int] = mapped_column(SmallInteger)

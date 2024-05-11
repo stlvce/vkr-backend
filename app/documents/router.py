@@ -79,7 +79,7 @@ async def document_norm_pin(pin_data: DocNormPin, db=Depends(get_db)):
 
 
 @document_router.delete("/type-permission-pin/{pin_id}", dependencies=[Depends(get_current_admin)])
-async def type_permission_document_pin(pin_id: int, db=Depends(get_db)):
+async def type_permission_pin_delete(pin_id: int, db=Depends(get_db)):
     result = document_repository.type_permission_pin_delete(pin_id, db)
 
     if not result:
@@ -89,7 +89,7 @@ async def type_permission_document_pin(pin_id: int, db=Depends(get_db)):
 
 
 @document_router.delete("/norm-pin/{pin_id}", dependencies=[Depends(get_current_admin)])
-async def document_norm_pin(pin_id: int, db=Depends(get_db)):
+async def norm_pin_delete(pin_id: int, db=Depends(get_db)):
     result = document_repository.norm_pin_delete(pin_id, db)
 
     if not result:

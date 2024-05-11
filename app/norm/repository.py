@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session, selectinload
 from app.config.models import NormModel, DocumentNorms, TypePermissionNorms
 from app.config.repository_base import RepositoryBase, CreateSchemaType
 
-from .schemas import NormIn, NormOut, NormUpdate, NormWithTypePermissions, NormWithTypeDocuments
+from .schemas import NormIn, NormOut, NormUpdate, NormWithTypePermissions, NormWithTypeDocuments, NormTypePermissionPin
 
 
 class NormRepository(RepositoryBase[NormModel, NormIn, NormUpdate]):
@@ -45,6 +45,24 @@ class NormRepository(RepositoryBase[NormModel, NormIn, NormUpdate]):
         res = db.execute(query)
         result = res.unique().scalars().first()
         return result
+
+    def type_permission_pin(self, pin_data: list[NormTypePermissionPin], db: Session):
+        commit_list = []
+        for item in pin_data:
+            commit_list.append(TypePermissionNorms(**item.dict()))
+        db.add_all(commit_list)
+        db.commit()
+
+    def type_permission_pin_delete(self, pin_id: int, db: Session) -> NormTypePermissionPin | None:
+        obj = db.get(TypePermissionNorms, pin_id)
+
+        if not obj:
+            return None
+
+        db.delete(obj)
+        db.commit()
+
+        return obj
 
 
 norm_repository = NormRepository(NormModel)

@@ -3,7 +3,7 @@ from fastapi import APIRouter, HTTPException, Depends, Response
 from app.config.database import get_db
 from app.auth.security import get_current_admin
 
-from .schemas import NormIn, NormOut, NormWithTypePermissions, NormWithTypeDocuments
+from .schemas import NormIn, NormOut, NormWithTypePermissions, NormWithTypeDocuments, NormTypePermissionPin, NormUpdateIn
 from .repository import norm_repository
 
 norm_router = APIRouter()
@@ -49,13 +49,30 @@ async def create_norm(norm_data: NormIn, db=Depends(get_db)):
 
 
 @norm_router.put("/{norm_id}", dependencies=[Depends(get_current_admin)])
-async def edit_norm(norm_id: int, norm_data: NormIn, db=Depends(get_db)):
+async def edit_norm(norm_id: int, norm_data: NormUpdateIn, db=Depends(get_db)):
     relation = "-".join(norm_data.relation)
     setattr(norm_data, "relation", relation)
 
     norm = norm_repository.update(norm_id, norm_data, db)
 
     if not norm:
+        raise HTTPException(status_code=400)
+
+    return Response(status_code=200)
+
+
+@norm_router.post("/type-permission-pin", dependencies=[Depends(get_current_admin)])
+async def type_permission_pin(pin_data: list[NormTypePermissionPin], db=Depends(get_db)):
+    norm_repository.type_permission_pin(pin_data, db)
+
+    return Response(status_code=200)
+
+
+@norm_router.delete("/type-permission-pin/{pin_id}", dependencies=[Depends(get_current_admin)])
+async def type_permission_pin_delete(pin_id: int, db=Depends(get_db)):
+    result = norm_repository.type_permission_pin_delete(pin_id, db)
+
+    if not result:
         raise HTTPException(status_code=400)
 
     return Response(status_code=200)

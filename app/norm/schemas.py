@@ -48,6 +48,14 @@ class NormIn(BaseModel):
     type: TypeEnum
 
 
+class NormUpdateIn(BaseModel):
+    relation: List[str]
+    distance: int
+    description: str
+    priority: PriorityEnum
+    type: TypeEnum
+
+
 class NormUpdate(BaseModel):
     relation: str
     distance: int
@@ -62,3 +70,8 @@ class NormWithTypePermissions(NormOut):
 
 class NormWithTypeDocuments(NormOut):
     documents: list[DocumentOut]
+
+
+class NormTypePermissionPin(BaseModel):
+    type_permission_id: int
+    norm_id: int

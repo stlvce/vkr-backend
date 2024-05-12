@@ -51,6 +51,8 @@ class ProjectModel(Base):
     buildings: Mapped[List["BuildingModel"]] = relationship("BuildingModel", back_populates="project",
                                                             cascade="all, delete-orphan")
     tips: Mapped[List["TipModel"]] = relationship("TipModel", back_populates="project", cascade="all, delete-orphan")
+    neighbours: Mapped[List["NeighborModel"]] = relationship("NeighborModel", back_populates="project",
+                                                             cascade="all, delete-orphan")
 
 
 class LandModel(Base):
@@ -68,19 +70,17 @@ class LandModel(Base):
     project: Mapped["ProjectModel"] = relationship("ProjectModel", back_populates="land")
     land_category: Mapped["LandCategoryModel"] = relationship("LandCategoryModel", back_populates="lands")
     type_permission: Mapped["TypePermissionModel"] = relationship("TypePermissionModel", back_populates="lands")
-    neighbours: Mapped[List["NeighborModel"]] = relationship("NeighborModel", back_populates="land",
-                                                             cascade="all, delete-orphan")
 
 
 class NeighborModel(Base):
     __tablename__ = "neighbours"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    land_id: Mapped[int] = mapped_column(Integer, ForeignKey("lands.id"))
+    project_id: Mapped[int] = mapped_column(Integer, ForeignKey("projects.id"))
 
     location: Mapped[str] = mapped_column(String(20))
 
-    land: Mapped["LandModel"] = relationship("LandModel", back_populates="neighbours")
+    project: Mapped["ProjectModel"] = relationship("ProjectModel", back_populates="neighbours")
     buildings: Mapped[List["BuildingModel"]] = relationship("BuildingModel", back_populates="neighbor",
                                                             cascade="all, delete-orphan")
 

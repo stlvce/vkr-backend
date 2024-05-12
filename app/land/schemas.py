@@ -7,7 +7,7 @@ class LandIn(BaseModel):
     type_permission_id: int
     width_parcel: int
     length_parcel: int
-    neighbors_location: List[str]
+    red_borders: List[str]
 
 
 class LandOut(BaseModel):
@@ -17,7 +17,7 @@ class LandOut(BaseModel):
     type_permission_id: int
     width_parcel: int
     length_parcel: int
-    neighbors_location: List[str]
+    red_borders: List[str]
 
 
 class LandEdit(BaseModel):
@@ -25,4 +25,4 @@ class LandEdit(BaseModel):
     type_permission_id: int
     width_parcel: int
     length_parcel: int
-    neighbors_location: List[str]
+    red_borders: List[str]

@@ -37,7 +37,7 @@ def update_land_by_project_id(user_id: int, project_id: int, land_data: LandEdit
     setattr(land, "type_permission_id", land_data.type_permission_id)
     setattr(land, "width_parcel", land_data.width_parcel)
     setattr(land, "length_parcel", land_data.length_parcel)
-    setattr(land, "neighbors_location", land_data.neighbors_location)
+    setattr(land, "red_borders", land_data.red_borders)
 
     db.commit()
     

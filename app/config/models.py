@@ -63,11 +63,26 @@ class LandModel(Base):
 
     width_parcel: Mapped[int] = mapped_column(SmallInteger)
     length_parcel: Mapped[int] = mapped_column(SmallInteger)
-    neighbors_location: Mapped[List[str]] = mapped_column(JSON)
+    red_borders: Mapped[List[str]] = mapped_column(JSON)
 
     project: Mapped["ProjectModel"] = relationship("ProjectModel", back_populates="land")
     land_category: Mapped["LandCategoryModel"] = relationship("LandCategoryModel", back_populates="lands")
     type_permission: Mapped["TypePermissionModel"] = relationship("TypePermissionModel", back_populates="lands")
+    neighbours: Mapped[List["NeighborModel"]] = relationship("NeighborModel", back_populates="land",
+                                                             cascade="all, delete-orphan")
+
+
+class NeighborModel(Base):
+    __tablename__ = "neighbours"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    land_id: Mapped[int] = mapped_column(Integer, ForeignKey("lands.id"))
+
+    location: Mapped[str] = mapped_column(String(20))
+
+    land: Mapped["LandModel"] = relationship("LandModel", back_populates="neighbours")
+    buildings: Mapped[List["BuildingModel"]] = relationship("BuildingModel", back_populates="neighbor",
+                                                            cascade="all, delete-orphan")
 
 
 class BuildingModel(Base):
@@ -76,6 +91,7 @@ class BuildingModel(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     project_id: Mapped[int] = mapped_column(Integer, ForeignKey("projects.id"))
     material_id: Mapped[int] = mapped_column(Integer, ForeignKey("materials.id"))
+    neighbor_id: Mapped[int] = mapped_column(Integer, ForeignKey("materials.id"), nullable=True)
 
     type: Mapped[str] = mapped_column(String(30))
     title: Mapped[str] = mapped_column(String(40))
@@ -88,6 +104,7 @@ class BuildingModel(Base):
     project: Mapped["ProjectModel"] = relationship("ProjectModel", back_populates="buildings")
     material: Mapped["MaterialModel"] = relationship("MaterialModel", back_populates="buildings")
     tips: Mapped[List["TipModel"]] = relationship("TipModel", secondary="building_tips", back_populates="buildings")
+    neighbor: Mapped["NeighborModel"] = relationship("NeighborModel", back_populates="buildings")
 
 
 class TipModel(Base):

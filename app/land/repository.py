@@ -21,6 +21,10 @@ def read_land_by_project_id(user_id, project_id, db: Session) -> LandOut | None:
     return db.query(LandModel).filter(LandModel.project_id == project_id).first()
 
 
+def read_land_by_type_permission_id(typ_permission_id: int, db: Session) -> list[LandOut]:
+    return db.query(LandModel).where(LandModel.type_permission_id == typ_permission_id).all()
+
+
 def update_land_by_project_id(user_id: int, project_id: int, land_data: LandEdit, db: Session) -> LandOut | None:
     project = receive_project_by_id(user_id, project_id, db)
 

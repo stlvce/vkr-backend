@@ -12,6 +12,14 @@ def add_new_building(building_data: BuildingCreate, db: Session) -> BuildingOut:
     db.commit()
 
 
+def add_many_buildings(building_list: list[BuildingCreate], db: Session):
+    commit_list = []
+    for item in building_list:
+        commit_list.append(BuildingModel(**item.dict()))
+    db.add_all(commit_list)
+    db.commit()
+
+
 def receive_buildings(project_id: int, db: Session):
     buildings = db.query(BuildingModel).filter(BuildingModel.project_id == project_id).all()
 

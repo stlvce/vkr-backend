@@ -16,10 +16,11 @@ document_router = APIRouter()
 async def create_document(file: UploadFile, db=Depends(get_db)):
     uuid_code = str(uuid.uuid4())
     filename_parts = file.filename.split(".")
-    if filename_parts[-1] != "pdf":
+    file_type = filename_parts.pop()
+    if file_type != "pdf":
         raise HTTPException(status_code=400, detail="ONLY_PDF")
     document_repository.create(
-        DocumentIn(title=filename_parts[0], file_type="pdf", link=uuid_code),
+        DocumentIn(title=".".join(filename_parts), file_type="pdf", link=uuid_code),
         db)
     await upload_file(file, uuid_code)
     return Response(status_code=200)

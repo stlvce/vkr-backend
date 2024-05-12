@@ -7,7 +7,7 @@ from app.user.schemas import UserOut
 from app.project.repository import receive_project_by_id
 
 from .schemas import BuildingCreate, BuildingOut, BuildingEdit, BuildingDelete
-from .repository import receive_buildings, add_new_building, change_building_info, remove_building_by_id
+from .repository import receive_buildings, add_new_building, change_building_info, remove_building_by_id, add_many_buildings
 
 building_router = APIRouter()
 
@@ -21,6 +21,23 @@ async def create_building(new_building: BuildingCreate, current_user: Annotated[
         raise HTTPException(status_code=400, detail="PROJECT_NOT_FOUND")
 
     add_new_building(new_building, db)
+
+    return Response(status_code=200)
+
+
+@building_router.post("/list")
+async def create_several_building(new_buildings_list: list[BuildingCreate],
+                                  current_user: Annotated[UserOut, Depends(get_current_user)],
+                                  db=Depends(get_db)):
+    if len(new_buildings_list) == 0:
+        return Response(status_code=200)
+
+    project = receive_project_by_id(current_user.id, new_buildings_list[0].project_id, db)
+
+    if not project:
+        raise HTTPException(status_code=400, detail="PROJECT_NOT_FOUND")
+
+    add_many_buildings(new_buildings_list, db)
 
     return Response(status_code=200)
 

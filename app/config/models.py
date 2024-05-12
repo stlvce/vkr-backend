@@ -91,7 +91,7 @@ class BuildingModel(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     project_id: Mapped[int] = mapped_column(Integer, ForeignKey("projects.id"))
     material_id: Mapped[int] = mapped_column(Integer, ForeignKey("materials.id"))
-    neighbor_id: Mapped[int] = mapped_column(Integer, ForeignKey("materials.id"), nullable=True)
+    neighbor_id: Mapped[int] = mapped_column(Integer, ForeignKey("neighbours.id"), nullable=True)
 
     type: Mapped[str] = mapped_column(String(30))
     title: Mapped[str] = mapped_column(String(40))

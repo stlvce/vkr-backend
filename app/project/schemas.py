@@ -2,12 +2,14 @@ from pydantic import BaseModel
 from datetime import datetime
 
 from app.land.schemas import LandIn, LandOut
+from app.neighbours.schemas import LocationEnum
 
 
 class ProjectCreate(BaseModel):
     title: str
     description: str | None = None
     land: LandIn
+    neighbours: list[LocationEnum]
 
 
 class ProjectIn(BaseModel):

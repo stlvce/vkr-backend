@@ -4,6 +4,7 @@ from pydantic import BaseModel
 class BuildingCreate(BaseModel):
     project_id: int
     material_id: int
+    neighbor_id: int | None = None
     type: str
     title: str
     width: int
@@ -15,10 +16,11 @@ class BuildingOut(BaseModel):
     id: int
     project_id: int
     material_id: int
+    neighbor_id: int | None = None
     type: str
     title: str
-    start_x: float
-    start_y: float
+    start_x: float | None
+    start_y: float | None
     width: int
     length: int
     height: int

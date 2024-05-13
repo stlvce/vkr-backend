@@ -3,6 +3,7 @@ from pydantic import BaseModel
 from app.building.schemas import BuildingOut
 from app.tip.schemas import PriorityEnum
 from app.land.schemas import LandOut
+from app.neighbours.schemas import LocationEnum
 
 
 class BuildingInfo(BuildingOut):
@@ -17,13 +18,10 @@ class LandInfo(LandOut):
 
 class ExpertIn(BaseModel):
     type_permission_id: int
+    neighbours: list[LocationEnum]
     land: LandInfo
     current_building: BuildingInfo
     other_buildings: list[BuildingInfo]
-
-
-class ExpertOut(BaseModel):
-    pass
 
 
 class TipExpertOut(BaseModel):
@@ -32,3 +30,8 @@ class TipExpertOut(BaseModel):
     priority: PriorityEnum
     current_distance: int
     type: str
+
+
+class ExpertOut(BaseModel):
+    current_building: BuildingInfo
+    tips: list[TipExpertOut]

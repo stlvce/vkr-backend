@@ -1,9 +1,9 @@
-from sqlalchemy.orm import Session
-from shapely.geometry import Polygon
+from shapely import distance
+from shapely.geometry import Polygon, LineString
 
-from app.norm.repository import norm_repository
+from app.tip.schemas import TipOut
 
-from .schemas import BuildingInfo
+from .schemas import BuildingInfo, TipExpertOut, LandInfo
 
 
 class Building(Polygon):
@@ -12,9 +12,9 @@ class Building(Polygon):
     """
 
     def __new__(cls, x: int, y: int, width: int, length: int, **kwargs):
-        second_point = (x + width, y)
-        third_point = (x + width, y - length)
-        fourth_point = (x, y - length)
+        second_point = (x + length, y)
+        third_point = (x + length, y + width)
+        fourth_point = (x, y + width)
         return super().__new__(cls, [(x, y), second_point, third_point, fourth_point], **kwargs)
 
 
@@ -29,14 +29,35 @@ def receive_relation(obj1_type: str, obj2_type: str):
     return "-".join(sorted([obj1_type, obj2_type]))
 
 
-def receive_tip(relation: str, distance: float, db: Session) -> str | None:
-    rule = norm_repository.get_by_relation(relation, db)
+def check_borders(norm: TipOut, building: BuildingInfo, land: LandInfo) -> list[TipExpertOut]:
+    result = []
 
-    if not rule:
-        return None
+    current_building = Building(
+        int(building.start_x),
+        int(building.start_y),
+        building.width,
+        building.length)
 
-    if distance < rule.distance:
-        return rule.tip_text
+    land_borders = [
+        [(0, 0), (land.length_parcel, 0)],
+        [(land.length_parcel, 0), (land.length_parcel, land.width_parcel)],
+        [(land.length_parcel, land.width_parcel), (0, land.width_parcel)],
+        [(0, land.width_parcel), (0, 0)],
+    ]
+    print(land_borders)
+    print(current_building)
 
-    # Если расстояние удовалетворяет норме возращать None
-    return None
+    for border in land_borders:
+        border_distance = distance(LineString(border), current_building)
+
+        if border_distance < norm.distance:
+            result.append(TipExpertOut(norm_id=norm.id,
+                                       description=norm.description,
+                                       priority=norm.priority,
+                                       current_distance=border_distance,
+                                       type=norm.type
+                                       )
+                          )
+            break
+
+    return result

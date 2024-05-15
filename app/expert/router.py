@@ -55,28 +55,31 @@ async def expert_tips(body: ExpertIn, db=Depends(get_db)):
     if len(body.other_buildings) == 0:
         return {"current_building": body.current_building, "tips": result}
 
-    curr_building_material_prefix = ""
+    curr_building_material_suffix = ""
 
+    if body.current_building.material is not None:
+        curr_building_material_suffix = "_" + body.current_building.material.type
 
     for building in body.other_buildings:
-        calc_distance = calculate_distance(body.current_building, building)
-        relation = receive_relation(body.current_building.type, building.type)
-        if building.neighbor_id is not None:
-            relation = receive_relation(body.current_building.type, "nb_" + building.type)
+        other_building_material_suffix = ""
+        if building.material is not None:
+            other_building_material_suffix = "_" + building.material.type
 
-        norms_list = [item for item in type_permission.norms if item.relation == relation]
-        additional_distance = 0
-        materials_list = [item for item in materials if item.id == body.current_building.material_id]
-        if len(norms_list) == 0:
+        calc_distance = calculate_distance(body.current_building, building)
+
+        relation = receive_relation(body.current_building.type + curr_building_material_suffix,
+                                    building.type + other_building_material_suffix)
+        if building.neighbor_id is not None:
+            relation = receive_relation(
+                body.current_building.type + curr_building_material_suffix,
+                "nb_" + building.type + other_building_material_suffix)
+
+        norm = find_norm_in_list(relation, type_permission.norms)
+
+        if norm is None:
             continue
 
-        if len(materials_list) != 0:
-            material = materials_list[0]
-            additional_distance = material.additional_distance
-
-        norm = norms_list[0]
-
-        if calc_distance < norm.distance + additional_distance:
+        if calc_distance < norm.distance:
             result.append(TipExpertOut(norm_id=norm.id,
                                        description=norm.description,
                                        priority=norm.priority,

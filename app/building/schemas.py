@@ -26,7 +26,7 @@ class BuildingOut(BaseModel):
     width: int
     length: int
     height: int
-    material: MaterialOut
+    material: MaterialOut | None
 
 
 class BuildingEdit(BaseModel):

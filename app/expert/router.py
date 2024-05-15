@@ -6,7 +6,7 @@ from app.type_permission.repository import type_permission_repository
 from app.material.repository import material_repository
 
 from .schemas import ExpertIn, TipExpertOut, ExpertOut
-from .service import calculate_distance, receive_relation, Building, check_borders
+from .service import calculate_distance, receive_relation, check_borders, find_norm_in_list, check_border
 
 expert_router = APIRouter()
 
@@ -14,16 +14,44 @@ expert_router = APIRouter()
 @expert_router.post("", response_model=ExpertOut)
 async def expert_tips(body: ExpertIn, db=Depends(get_db)):
     result = []
+
+    # Получение норм по id ВРИ
     type_permission = type_permission_repository.get_norms(body.type_permission_id, db)
-    border_norms = [item for item in type_permission.norms if item.relation == receive_relation("border",
-                                                                                                body.current_building.type)]
-    nb_border_norms = [item for item in type_permission.norms if item.relation == receive_relation("nb",
-                                                                                                   body.current_building.type)]
 
-    if len(border_norms) != 0:
-        border_tips = check_borders(border_norms[0], body.current_building, body.land)
-        result = result + border_tips
+    if len(type_permission.norms) == 0:
+        return result
 
+    # Извлечение норм о границе участка и границе соседа
+    current_border_norm = None
+    border_norm = find_norm_in_list(receive_relation("border", body.current_building.type),
+                                     type_permission.norms)
+    nb_border_norm = find_norm_in_list(receive_relation("nb_land", body.current_building.type),
+                                        type_permission.norms)
+    red_border_norm = find_norm_in_list(receive_relation("red_border", body.current_building.type),
+                                         type_permission.norms)
+
+    for location in ["left", "right", "top", "bottom"]:
+        if border_norm is not None:
+            current_border_norm = border_norm
+
+        if (nb_border_norm is not None
+                and location in body.neighbours
+                and current_border_norm.distance <= nb_border_norm.distance):
+            current_border_norm = nb_border_norm
+
+        if (red_border_norm is not None
+                and location in body.land.red_borders
+                and current_border_norm.distance < red_border_norm.distance):
+
+            current_border_norm = red_border_norm
+        if current_border_norm is not None:
+            tip = check_border(current_border_norm, body.current_building, body.land, location)
+
+            if tip is not None:
+                result.append(tip)
+
+
+    # Проверка расстояния между строениями
     if len(body.other_buildings) == 0:
         return {"current_building": body.current_building, "tips": result}
 

@@ -1,7 +1,7 @@
 from shapely import distance
 from shapely.geometry import Polygon, LineString
 
-from app.tip.schemas import TipOut
+from app.norm.schemas import NormOut
 
 from .schemas import BuildingInfo, TipExpertOut, LandInfo
 
@@ -29,7 +29,41 @@ def receive_relation(obj1_type: str, obj2_type: str):
     return "-".join(sorted([obj1_type, obj2_type]))
 
 
-def check_borders(norm: TipOut, building: BuildingInfo, land: LandInfo) -> list[TipExpertOut]:
+def check_border(norm: NormOut, building: BuildingInfo, land: LandInfo, border_location: str) -> TipExpertOut | None:
+    current_building = Building(
+        int(building.start_x),
+        int(building.start_y),
+        building.width,
+        building.length)
+
+    border_distance = None
+
+    if border_location == "left":
+        border_distance = distance(LineString([(0, land.width_parcel), (0, 0)]), current_building)
+
+    if border_location == "right":
+        border_distance = distance(LineString([(land.length_parcel, 0), (land.length_parcel, land.width_parcel)]),
+                                   current_building)
+
+    if border_location == "top":
+        border_distance = distance(LineString([(0, 0), (land.length_parcel, 0)]), current_building)
+
+    if border_location == "bottom":
+        border_distance = distance(LineString([(land.length_parcel, land.width_parcel), (0, land.width_parcel)]),
+                                   current_building)
+    if border_distance is not None and border_distance < norm.distance:
+        return TipExpertOut(norm_id=norm.id,
+                            description=norm.description,
+                            priority=norm.priority,
+                            current_distance=border_distance,
+                            type=norm.type,
+                            relation=norm.relation
+                            )
+
+    return None
+
+
+def check_borders(norm: NormOut, building: BuildingInfo, land: LandInfo) -> list[TipExpertOut]:
     result = []
 
     current_building = Building(
@@ -60,3 +94,11 @@ def check_borders(norm: TipOut, building: BuildingInfo, land: LandInfo) -> list[
             break
 
     return result
+
+
+def find_norm_in_list(relation: str, norm_list: list[NormOut]) -> NormOut | None:
+    result = [item for item in norm_list if item.relation == relation]
+    if len(result) == 0:
+        return None
+
+    return result[0]

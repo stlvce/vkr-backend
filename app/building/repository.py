@@ -1,4 +1,4 @@
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 
 from app.config.models import BuildingModel
 from app.project.repository import receive_project_by_id
@@ -21,7 +21,8 @@ def add_many_buildings(building_list: list[BuildingCreate], db: Session):
 
 
 def receive_buildings(project_id: int, db: Session):
-    buildings = db.query(BuildingModel).filter(BuildingModel.project_id == project_id).all()
+    buildings = db.query(BuildingModel).where(BuildingModel.project_id == project_id).options(
+        joinedload(BuildingModel.material)).all()
 
     return buildings
 

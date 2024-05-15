@@ -55,7 +55,8 @@ async def expert_tips(body: ExpertIn, db=Depends(get_db)):
     if len(body.other_buildings) == 0:
         return {"current_building": body.current_building, "tips": result}
 
-    materials = material_repository.get_all(db)
+    curr_building_material_prefix = ""
+
 
     for building in body.other_buildings:
         calc_distance = calculate_distance(body.current_building, building)

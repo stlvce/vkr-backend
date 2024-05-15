@@ -1,5 +1,7 @@
 from pydantic import BaseModel
 
+from app.material.schemas import MaterialOut
+
 
 class BuildingCreate(BaseModel):
     project_id: int
@@ -24,6 +26,7 @@ class BuildingOut(BaseModel):
     width: int
     length: int
     height: int
+    material: MaterialOut
 
 
 class BuildingEdit(BaseModel):

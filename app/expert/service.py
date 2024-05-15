@@ -44,8 +44,6 @@ def check_borders(norm: TipOut, building: BuildingInfo, land: LandInfo) -> list[
         [(land.length_parcel, land.width_parcel), (0, land.width_parcel)],
         [(0, land.width_parcel), (0, 0)],
     ]
-    print(land_borders)
-    print(current_building)
 
     for border in land_borders:
         border_distance = distance(LineString(border), current_building)
@@ -55,7 +53,8 @@ def check_borders(norm: TipOut, building: BuildingInfo, land: LandInfo) -> list[
                                        description=norm.description,
                                        priority=norm.priority,
                                        current_distance=border_distance,
-                                       type=norm.type
+                                       type=norm.type,
+                                       relation=receive_relation("border", building.type)
                                        )
                           )
             break

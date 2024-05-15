@@ -114,7 +114,7 @@ class TipModel(Base):
     project_id: Mapped[int] = mapped_column(Integer, ForeignKey("projects.id"))
     norm_id: Mapped[int] = mapped_column(Integer, ForeignKey("norms.id"))
 
-    description: Mapped[str] = mapped_column(String(100))
+    description: Mapped[str] = mapped_column(String(200))
     priority: Mapped[int] = mapped_column(String(10))
     current_distance: Mapped[int] = mapped_column(SmallInteger)
     type: Mapped[str] = mapped_column(String(30))
@@ -190,7 +190,7 @@ class NormModel(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
 
     relation: Mapped[str] = mapped_column(String(50))
-    description: Mapped[str] = mapped_column(String(100), unique=True)
+    description: Mapped[str] = mapped_column(String(200), unique=True)
     distance: Mapped[int] = mapped_column(SmallInteger)
     priority: Mapped[int] = mapped_column(String(10))
     type: Mapped[str] = mapped_column(String(30))

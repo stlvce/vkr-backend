@@ -33,11 +33,9 @@ async def expert_tips(body: ExpertIn, db=Depends(get_db)):
         calc_distance = calculate_distance(body.current_building, building)
         relation = receive_relation(body.current_building.type, building.type)
         if building.neighbor_id is not None:
-            print("СОСЕДНИЙ", building.title)
             relation = receive_relation(body.current_building.type, "nb_" + building.type)
 
         norms_list = [item for item in type_permission.norms if item.relation == relation]
-        # TODO переделать на отношение материалов
         additional_distance = 0
         materials_list = [item for item in materials if item.id == body.current_building.material_id]
         if len(norms_list) == 0:
@@ -54,7 +52,8 @@ async def expert_tips(body: ExpertIn, db=Depends(get_db)):
                                        description=norm.description,
                                        priority=norm.priority,
                                        current_distance=calc_distance,
-                                       type=norm.type
+                                       type=norm.type,
+                                       relation=relation
                                        )
                           )
 

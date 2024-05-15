@@ -3,15 +3,29 @@ from typing import Type
 
 from app.config.models import TipModel
 
-from .schemas import TipIn
+from .schemas import TipIn, TipSaveIn
 
 
-def add_new_rule(tip_data: TipIn, db: Session):
+def add_new_tip(tip_data: TipIn, db: Session):
     new_tip = TipModel(**tip_data.dict())
     db.add(new_tip)
     db.commit()
     db.refresh(new_tip)
     return new_tip
+
+
+def add_many_tips(tips_list: list[TipSaveIn], db: Session):
+    commit_list = []
+    for item in tips_list:
+        commit_list.append(TipModel(**item.dict()))
+    db.add_all(commit_list)
+    db.commit()
+
+
+def delete_many_tips(tips_list: list[TipModel], db: Session):
+    for tip in tips_list:
+        db.delete(tip)
+    db.commit()
 
 
 def receive_all_tips(project_id: int, db: Session) -> list[Type[TipModel]]:

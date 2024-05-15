@@ -30,6 +30,8 @@ class TipExpertOut(BaseModel):
     priority: PriorityEnum
     current_distance: int
     type: str
+    # TODO временно пока не знаю как идентиф на фронте их
+    relation: str
 
 
 class ExpertOut(BaseModel):

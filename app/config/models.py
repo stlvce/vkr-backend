@@ -90,7 +90,7 @@ class BuildingModel(Base):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     project_id: Mapped[int] = mapped_column(Integer, ForeignKey("projects.id"))
-    material_id: Mapped[int] = mapped_column(Integer, ForeignKey("materials.id"))
+    material_id: Mapped[int] = mapped_column(Integer, ForeignKey("materials.id"), nullable=True, default=None)
     neighbor_id: Mapped[int] = mapped_column(Integer, ForeignKey("neighbours.id"), nullable=True, default=None)
 
     type: Mapped[str] = mapped_column(String(30))
@@ -247,6 +247,16 @@ class MaterialModel(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
 
     material_title: Mapped[str] = mapped_column(String(90), unique=True)
-    additional_distance: Mapped[int] = mapped_column(SmallInteger)
+    type: Mapped[str] = mapped_column(String(30), unique=True)
+    color: Mapped[str] = mapped_column(String(10))
 
     buildings: Mapped[List["BuildingModel"]] = relationship("BuildingModel", back_populates="material")
+
+
+# class MaterialRelationshipsModel(Base):
+#     __tablename__ = "material_relationships"
+#     id: Mapped[int] = mapped_column(Integer, primary_key=True)
+#
+#     title: Mapped[str] = mapped_column(String(180), unique=True)
+#     relation: Mapped[str] = mapped_column(Integer, unique=True)
+#     additional_distance: Mapped[int] = mapped_column(SmallInteger)

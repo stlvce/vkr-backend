@@ -9,7 +9,7 @@ from .schemas import NormIn, NormOut, NormUpdate, NormWithTypePermissions, NormW
 
 class NormRepository(RepositoryBase[NormModel, NormIn, NormUpdate]):
     def create(self, obj_in: CreateSchemaType, db: Session):
-        relation = "-".join(obj_in.relation)
+        relation = "-".join(sorted(obj_in.relation))
         db_norm = NormModel(relation=relation, description=obj_in.description, distance=obj_in.distance, type=obj_in.type, priority=obj_in.priority)
         db.add(db_norm)
         db.commit()

@@ -3,7 +3,7 @@ from pydantic import BaseModel
 
 class BuildingCreate(BaseModel):
     project_id: int
-    material_id: int
+    material_id: int | None = None
     neighbor_id: int | None = None
     type: str
     title: str
@@ -15,7 +15,7 @@ class BuildingCreate(BaseModel):
 class BuildingOut(BaseModel):
     id: int
     project_id: int
-    material_id: int
+    material_id: int | None = None
     neighbor_id: int | None = None
     type: str
     title: str
@@ -27,7 +27,8 @@ class BuildingOut(BaseModel):
 
 
 class BuildingEdit(BaseModel):
-    material_id: int
+    material_id: int | None = None
+    neighbor_id: int | None = None
     title: str
     start_x: float
     start_y: float

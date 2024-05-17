@@ -1,11 +1,11 @@
 FROM python:3.11
 
-RUN curl -sSL https://install.python-poetry.org | python -
+WORKDIR /code
 
-WORKDIR /app
-COPY pyproject.toml poetry.lock /app/
-RUN poetry config virtualenvs.create false && poetry install --no-dev
+COPY ./requirements.txt /code/requirements.txt
 
-COPY . /app
+RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
 
-CMD ["poetry", "run", "uvicorn", "app.main:app", "--reload", "0.0.0.0", "--port", "8000"]
+COPY ./app /code/app
+
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "80"]

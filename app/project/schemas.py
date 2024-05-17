@@ -2,7 +2,7 @@ from pydantic import BaseModel
 from datetime import datetime
 
 from app.land.schemas import LandIn, LandOut
-from app.neighbours.schemas import LocationEnum
+from app.neighbours.schemas import LocationEnum, NeighborOut
 
 
 class ProjectCreate(BaseModel):
@@ -30,5 +30,16 @@ class ProjectOut(BaseModel):
     title: str
     description: str | None
     land: LandOut
+    created_at: datetime
+    changed_at: datetime
+
+
+class ProjectWNeighboursOut(BaseModel):
+    id: int
+    user_id: int
+    title: str
+    description: str | None
+    land: LandOut
+    neighbours: list[NeighborOut]
     created_at: datetime
     changed_at: datetime

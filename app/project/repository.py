@@ -4,7 +4,7 @@ from typing import List
 
 from app.config.models import ProjectModel
 
-from .schemas import ProjectIn, ProjectOut, ProjectEdit
+from .schemas import ProjectIn, ProjectOut, ProjectEdit, ProjectWNeighboursOut
 
 
 def add_new_project(user_id: int, project_data: ProjectIn, db: Session) -> ProjectOut:
@@ -25,7 +25,7 @@ def receive_projects(user_id: int, db: Session, skip: int = 0, limit: int = 100,
     return curr
 
 
-def receive_project_by_id(user_id: int, project_id: int, db: Session) -> ProjectOut | None:
+def receive_project_by_id(user_id: int, project_id: int, db: Session) -> ProjectWNeighboursOut | None:
     project = db.get(ProjectModel, project_id)
     if not project or project.user_id != user_id:
         return None

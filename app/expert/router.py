@@ -4,6 +4,7 @@ from shapely import distance, LineString
 from app.config.database import get_db
 from app.type_permission.repository import type_permission_repository
 from app.material.repository import material_repository
+from app.norm.schemas import NormOut
 
 from .schemas import ExpertIn, TipExpertOut, ExpertOut
 from .service import calculate_distance, receive_relation, check_borders, find_norm_in_list, check_border
@@ -33,17 +34,22 @@ async def expert_tips(body: ExpertIn, db=Depends(get_db)):
     for location in ["left", "right", "top", "bottom"]:
         if border_norm is not None:
             current_border_norm = border_norm
+            print(current_border_norm)
 
-        if (nb_border_norm is not None
+        if ((current_border_norm is None and nb_border_norm is not None
+                and location in body.neighbours) or (nb_border_norm is not None
                 and location in body.neighbours
-                and current_border_norm.distance <= nb_border_norm.distance):
+                and current_border_norm.distance <= nb_border_norm.distance)):
             current_border_norm = nb_border_norm
+            print(current_border_norm)
 
-        if (red_border_norm is not None
+        if ((current_border_norm is None and red_border_norm is not None
+                and location in body.land.red_borders) or (red_border_norm is not None
                 and location in body.land.red_borders
-                and current_border_norm.distance < red_border_norm.distance):
-
+                and current_border_norm.distance < red_border_norm.distance)):
             current_border_norm = red_border_norm
+            print(current_border_norm)
+
         if current_border_norm is not None:
             tip = check_border(current_border_norm, body.current_building, body.land, location)
 
@@ -65,10 +71,16 @@ async def expert_tips(body: ExpertIn, db=Depends(get_db)):
         if building.material is not None:
             other_building_material_suffix = "_" + building.material.type
 
-        calc_distance = calculate_distance(body.current_building, building)
+        # TODO Это убрать
+        if building.material is None or body.current_building.material is None:
+            curr_building_material_suffix = ""
 
+        calc_distance = calculate_distance(body.current_building, building)
+        
         relation = receive_relation(body.current_building.type + curr_building_material_suffix,
                                     building.type + other_building_material_suffix)
+
+        print(relation)
         if building.neighbor_id is not None:
             relation = receive_relation(
                 body.current_building.type + curr_building_material_suffix,

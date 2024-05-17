@@ -9,14 +9,14 @@ from app.land.schemas import LandIn
 from app.neighbours.schemas import NeighborOut
 from app.neighbours.repository import neighbor_repository
 
-from .schemas import ProjectCreate, ProjectIn, ProjectEdit, ProjectOut
+from .schemas import ProjectCreate, ProjectIn, ProjectEdit, ProjectOut, ProjectWNeighboursOut
 from .repository import (add_new_project, receive_projects, remove_project_by_id, receive_project_by_id,
                          change_project_info)
 
 project_router = APIRouter()
 
 
-@project_router.post("")
+@project_router.post("", response_model=int)
 async def create_project(project_data: ProjectCreate, current_user: Annotated[UserOut, Depends(get_current_user)],
                          db=Depends(get_db)):
     project_data_dict = project_data.dict()
@@ -26,9 +26,11 @@ async def create_project(project_data: ProjectCreate, current_user: Annotated[Us
 
     project = add_new_project(current_user.id, ProjectIn(**project_data_dict), db)
     create_land(project.id, LandIn(**land_data), db)
-    neighbor_repository.create_multi(project.id, neighbours_list, db)
 
-    return Response(status_code=200)
+    if len(neighbours_list) != 0:
+        neighbor_repository.create_multi(project.id, neighbours_list, db)
+
+    return project.id
 
 
 @project_router.get("/all", response_model=list[ProjectOut])
@@ -39,7 +41,7 @@ async def get_all_projects(current_user: Annotated[UserOut, Depends(get_current_
     return receive_projects(current_user.id, db, skip, limit, sort_query)
 
 
-@project_router.get("/{project_id}", response_model=ProjectOut)
+@project_router.get("/{project_id}", response_model=ProjectWNeighboursOut)
 async def get_project(project_id: int, current_user: Annotated[UserOut, Depends(get_current_user)],
                       db=Depends(get_db)):
     project = receive_project_by_id(current_user.id, project_id, db)

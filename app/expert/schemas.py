@@ -28,7 +28,7 @@ class TipExpertOut(BaseModel):
     norm_id: int
     description: str
     priority: PriorityEnum
-    current_distance: int
+    current_distance: float
     type: str
     # TODO временно пока не знаю как идентиф на фронте их
     relation: str

@@ -42,7 +42,7 @@ class ProjectModel(Base):
     user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"))
 
     title: Mapped[str] = mapped_column(String(80))
-    description: Mapped[str] = mapped_column(String(200))
+    description: Mapped[str] = mapped_column(String(200), nullable=True, default=None)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, nullable=False)
     changed_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, nullable=False)
 

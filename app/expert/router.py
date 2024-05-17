@@ -20,7 +20,7 @@ async def expert_tips(body: ExpertIn, db=Depends(get_db)):
     type_permission = type_permission_repository.get_norms(body.type_permission_id, db)
 
     if len(type_permission.norms) == 0:
-        return result
+        return {"current_building": body.current_building, "tips": result}
 
     # Извлечение норм о границе участка и границе соседа
     current_border_norm = None
@@ -34,21 +34,18 @@ async def expert_tips(body: ExpertIn, db=Depends(get_db)):
     for location in ["left", "right", "top", "bottom"]:
         if border_norm is not None:
             current_border_norm = border_norm
-            print(current_border_norm)
 
         if ((current_border_norm is None and nb_border_norm is not None
                 and location in body.neighbours) or (nb_border_norm is not None
                 and location in body.neighbours
                 and current_border_norm.distance <= nb_border_norm.distance)):
             current_border_norm = nb_border_norm
-            print(current_border_norm)
 
         if ((current_border_norm is None and red_border_norm is not None
                 and location in body.land.red_borders) or (red_border_norm is not None
                 and location in body.land.red_borders
                 and current_border_norm.distance < red_border_norm.distance)):
             current_border_norm = red_border_norm
-            print(current_border_norm)
 
         if current_border_norm is not None:
             tip = check_border(current_border_norm, body.current_building, body.land, location)

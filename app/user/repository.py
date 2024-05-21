@@ -24,6 +24,10 @@ def get_user_by_username(username: str, db: Session) -> UserOut | None:
     return user
 
 
+def get_user_by_id(user_id: int, db: Session) -> UserOut | None:
+    return db.get(UserModel, user_id)
+
+
 async def change_user_info(user: UserOut, new_user_info: UserIn, db: Session) -> UserOut:
     if user.username != new_user_info.username:
         setattr(user, "username", new_user_info.username)

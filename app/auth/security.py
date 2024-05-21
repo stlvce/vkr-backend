@@ -8,7 +8,7 @@ from typing import Annotated
 from app.config.settings import app_settings
 from app.config.database import get_db
 from app.config.exceptions import UnauthorizedException
-from app.user.repository import get_user_by_username
+from app.user.repository import get_user_by_id, get_user_by_username
 from app.user.schemas import UserOut
 
 from .schemas import TokenData
@@ -38,13 +38,14 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None):
 async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)], db=Depends(get_db)) -> UserOut:
     try:
         payload = jwt.decode(token, app_settings.SECRET_KEY, algorithms=[app_settings.ALGORITHM])
-        username: str = payload.get("sub")
-        if username is None:
+        user_id: int = payload.get("id")
+        username: str = payload.get("username")
+        if user_id is None or username is None:
             raise UnauthorizedException
-        token_data = TokenData(username=username)
+        token_data = TokenData(id=user_id, username=username)
     except JWTError:
         raise UnauthorizedException
-    user = get_user_by_username(token_data.username, db)
+    user = get_user_by_id(token_data.id, db)
     if user is None:
         raise UnauthorizedException
     return user

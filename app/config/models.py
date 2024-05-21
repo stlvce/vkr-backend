@@ -173,7 +173,7 @@ class InitBuildingModel(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     type_permission_id: Mapped[int] = mapped_column(Integer, ForeignKey("type_permissions.id"))
 
-    type: Mapped[str] = mapped_column(String(30), unique=True)
+    type: Mapped[str] = mapped_column(String(30))
     title: Mapped[str] = mapped_column(String(40))
     min_length: Mapped[int] = mapped_column(SmallInteger)
     max_length: Mapped[int] = mapped_column(SmallInteger)

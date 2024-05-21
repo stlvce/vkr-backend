@@ -4,10 +4,18 @@ from pydantic import BaseModel
 class UserIn(BaseModel):
     email: str
     username: str
-
-
-class UserCreate(UserIn):
     password: str
+
+
+class UserUpdate(BaseModel):
+    email: str
+    username: str
+
+
+class UserCreate(BaseModel):
+    email: str
+    username: str
+    hashed_password: str
 
 
 class UserOut(BaseModel):
@@ -15,3 +23,4 @@ class UserOut(BaseModel):
     email: str
     username: str
     role: str
+

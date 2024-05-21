@@ -7,18 +7,20 @@ from typing import Annotated
 from app.config.settings import app_settings
 from app.config.database import get_db
 from app.config.exceptions import UnauthorizedException
-from app.user.schemas import UserCreate
-from app.user.repository import add_new_user
+from app.user.schemas import UserCreate, UserIn
+from app.user.repository import  user_repository
 
 from .schemas import Token
 from .security import create_access_token, authenticate_user
+from .service import get_password_hash
 
 auth_router = APIRouter()
 
 
 @auth_router.post("/register")
-async def register(user: UserCreate, db=Depends(get_db)):
-    new_user = add_new_user(user, db)
+async def register(user_data: UserIn, db=Depends(get_db)):
+    hashed_password = get_password_hash(user_data.password)
+    new_user = user_repository.create(UserCreate(username=user_data.username, email=user_data.email, hashed_password=hashed_password), db)
     if not new_user:
         raise HTTPException(status_code=400, detail="NOT_UNIQ_EMAIL_OR_USERNAME")
     return Response(status_code=HTTP_200_OK)

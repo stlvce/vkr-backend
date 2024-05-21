@@ -8,7 +8,7 @@ from typing import Annotated
 from app.config.settings import app_settings
 from app.config.database import get_db
 from app.config.exceptions import UnauthorizedException
-from app.user.repository import get_user_by_id, get_user_by_username
+from app.user.repository import user_repository
 from app.user.schemas import UserOut
 
 from .schemas import TokenData
@@ -18,7 +18,7 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/login")
 
 
 def authenticate_user(username: str, password: str, db: Session):
-    user = get_user_by_username(username, db)
+    user = user_repository.get_by_username(username, db)
     if not user or not verify_password(password, user.hashed_password):
         raise UnauthorizedException
     return user
@@ -45,7 +45,7 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)], db=Dep
         token_data = TokenData(id=user_id, username=username)
     except JWTError:
         raise UnauthorizedException
-    user = get_user_by_id(token_data.id, db)
+    user = user_repository.get(token_data.id, db)
     if user is None:
         raise UnauthorizedException
     return user

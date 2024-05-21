@@ -2,8 +2,9 @@ from shapely import distance
 from shapely.geometry import Polygon, LineString
 
 from app.norm.schemas import NormOut
+from app.building.schemas import BuildingOut
 
-from .schemas import BuildingInfo, TipExpertOut, LandInfo
+from .schemas import TipExpertOut, LandInfo
 
 
 class Building(Polygon):
@@ -18,7 +19,7 @@ class Building(Polygon):
         return super().__new__(cls, [(x, y), second_point, third_point, fourth_point], **kwargs)
 
 
-def calculate_distance(obj1_info: BuildingInfo, obj2_info: BuildingInfo) -> float:
+def calculate_distance(obj1_info: BuildingOut, obj2_info: BuildingOut) -> float:
     building1 = Building(int(obj1_info.start_x), int(obj1_info.start_y), obj1_info.width, obj1_info.length)
     building2 = Building(int(obj2_info.start_x), int(obj2_info.start_y), obj2_info.width, obj2_info.length)
 
@@ -29,7 +30,7 @@ def receive_relation(obj1_type: str, obj2_type: str):
     return "-".join(sorted([obj1_type, obj2_type]))
 
 
-def check_border(norm: NormOut, building: BuildingInfo, land: LandInfo, border_location: str) -> TipExpertOut | None:
+def check_border(norm: NormOut, building: BuildingOut, land: LandInfo, border_location: str) -> TipExpertOut | None:
     current_building = Building(
         int(building.start_x),
         int(building.start_y),
@@ -57,13 +58,14 @@ def check_border(norm: NormOut, building: BuildingInfo, land: LandInfo, border_l
                             priority=norm.priority,
                             current_distance=border_distance,
                             type=norm.type,
-                            relation=norm.relation
+                            relation=norm.relation,
+                            target_buildings=[building.id]
                             )
 
     return None
 
 
-def check_borders(norm: NormOut, building: BuildingInfo, land: LandInfo) -> list[TipExpertOut]:
+def check_borders(norm: NormOut, building: BuildingOut, land: LandInfo) -> list[TipExpertOut]:
     result = []
 
     current_building = Building(

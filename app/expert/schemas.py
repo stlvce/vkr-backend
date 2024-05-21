@@ -6,11 +6,6 @@ from app.land.schemas import LandOut
 from app.neighbours.schemas import LocationEnum
 
 
-class BuildingInfo(BuildingOut):
-    id: int | None = None
-    project_id: int | None = None
-
-
 class LandInfo(LandOut):
     id: int | None = None
     project_id: int | None = None
@@ -20,8 +15,8 @@ class ExpertIn(BaseModel):
     type_permission_id: int
     neighbours: list[LocationEnum]
     land: LandInfo
-    current_building: BuildingInfo
-    other_buildings: list[BuildingInfo]
+    current_building: BuildingOut
+    other_buildings: list[BuildingOut]
 
 
 class TipExpertOut(BaseModel):
@@ -32,8 +27,9 @@ class TipExpertOut(BaseModel):
     type: str
     # TODO временно пока не знаю как идентиф на фронте их
     relation: str
+    target_buildings: list[int]
 
 
 class ExpertOut(BaseModel):
-    current_building: BuildingInfo
+    current_building: BuildingOut
     tips: list[TipExpertOut]

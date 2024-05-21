@@ -77,7 +77,6 @@ async def expert_tips(body: ExpertIn, db=Depends(get_db)):
         relation = receive_relation(body.current_building.type + curr_building_material_suffix,
                                     building.type + other_building_material_suffix)
 
-        print(relation)
         if building.neighbor_id is not None:
             relation = receive_relation(
                 body.current_building.type + curr_building_material_suffix,
@@ -94,7 +93,8 @@ async def expert_tips(body: ExpertIn, db=Depends(get_db)):
                                        priority=norm.priority,
                                        current_distance=calc_distance,
                                        type=norm.type,
-                                       relation=relation
+                                       relation=relation,
+                                       target_buildings=[body.current_building.id, building.id]
                                        )
                           )
 

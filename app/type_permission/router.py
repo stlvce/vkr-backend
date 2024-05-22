@@ -4,7 +4,7 @@ from uuid import uuid4
 
 from app.config.database import get_db
 from app.land_category.repository import land_category_repository
-from app.land.repository import read_land_by_type_permission_id
+from app.land.repository import land_repository
 from app.auth.security import get_current_admin
 from app.documents.service import upload_file, remove_file
 
@@ -89,7 +89,7 @@ async def get_type_permission_by_land_category_id(land_category_id: int, db=Depe
 @type_permission_router.get("/{type_permission_id}/projects-count",
                             dependencies=[Depends(get_current_admin)], response_model=int)
 async def get_type_permission_by_land_category_id(type_permission_id: int, db=Depends(get_db)):
-    projects_list = read_land_by_type_permission_id(type_permission_id, db)
+    projects_list = land_repository.get_all_by_type_permission_id(type_permission_id, db)
 
     return len(projects_list)
 

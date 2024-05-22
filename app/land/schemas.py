@@ -10,6 +10,15 @@ class LandIn(BaseModel):
     red_borders: List[str]
 
 
+class LandCreate(BaseModel):
+    project_id: int
+    land_category_id: int
+    type_permission_id: int
+    width_parcel: int
+    length_parcel: int
+    red_borders: List[str]
+
+
 class LandOut(BaseModel):
     id: int
     project_id: int

@@ -1,44 +1,17 @@
 from sqlalchemy.orm import Session
 
+from app.config.repository_base import RepositoryBase
 from app.config.models import LandModel
 from app.project.repository import project_repository
 
-from .schemas import LandIn, LandOut, LandEdit
+from .schemas import LandIn, LandOut, LandEdit, LandCreate
 
 
-def create_land(project_id: int, new_land: LandIn, db: Session):
-    land = LandModel(project_id=project_id, **new_land.dict())
-    db.add(land)
-    db.commit()
-
-
-def read_land_by_project_id(user_id, project_id, db: Session) -> LandOut | None:
-    project = project_repository.get(project_id, db)
-
-    if not project or project.user_id != user_id:
-        return None
-
-    return db.query(LandModel).filter(LandModel.project_id == project_id).first()
-
-
-def read_land_by_type_permission_id(typ_permission_id: int, db: Session) -> list[LandOut]:
-    return db.query(LandModel).where(LandModel.type_permission_id == typ_permission_id).all()
-
-
-def update_land_by_project_id(user_id: int, project_id: int, land_data: LandEdit, db: Session) -> LandOut | None:
-    project = project_repository.get(project_id, db)
-
-    if not project or project.user_id != user_id:
-        return None
-
-    land = db.query(LandModel).filter(LandModel.project_id == project_id).first()
-
-    setattr(land, "land_category_id", land_data.land_category_id)
-    setattr(land, "type_permission_id", land_data.type_permission_id)
-    setattr(land, "width_parcel", land_data.width_parcel)
-    setattr(land, "length_parcel", land_data.length_parcel)
-    setattr(land, "red_borders", land_data.red_borders)
-
-    db.commit()
+class LandRepository(RepositoryBase[LandModel, LandCreate, LandEdit]):
+    def get_by_project_id(self, project_id: int, db: Session) -> LandOut | None:
+        return db.query(self.model).where(self.model.project_id == project_id).first()
     
-    return land
+    def get_all_by_type_permission_id(self, typ_permission_id: int, db: Session) -> LandOut | None:
+        return db.query(self.model).where(self.model.type_permission_id == typ_permission_id).all()
+
+land_repository = LandRepository(LandModel)

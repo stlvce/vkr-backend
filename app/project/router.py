@@ -4,8 +4,8 @@ from typing import Annotated
 from app.config.database import get_db
 from app.user.schemas import UserOut
 from app.auth.security import get_current_user
-from app.land.repository import create_land
-from app.land.schemas import LandIn
+from app.land.repository import land_repository
+from app.land.schemas import LandCreate
 from app.neighbours.schemas import NeighborOut
 from app.neighbours.repository import neighbor_repository
 
@@ -24,7 +24,7 @@ async def create_project(project_data: ProjectIn, current_user: Annotated[UserOu
     neighbours_list = project_data_dict.pop("neighbours")
 
     project = project_repository.create(ProjectCreate(**project_data_dict, user_id=current_user.id,), db)
-    create_land(project.id, LandIn(**land_data), db)
+    land_repository.create(LandCreate(project_id=project.id, **land_data), db)
 
     if len(neighbours_list) != 0:
         neighbor_repository.create_multi(project.id, neighbours_list, db)

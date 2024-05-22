@@ -1,37 +1,25 @@
 from sqlalchemy.orm import Session
 from typing import Type
 
+from app.config.repository_base import RepositoryBase
 from app.config.models import TipModel
 
 from .schemas import TipIn, TipSaveIn
 
+class TipRepository(RepositoryBase[TipModel, TipIn, TipIn]):
+    def create_multi(self, tips_list: list[TipIn], db):
+        commit_list = []
+        for item in tips_list:
+            commit_list.append(self.model(**item.dict()))
+        db.add_all(commit_list)
+        db.commit()
 
-def add_new_tip(tip_data: TipIn, db: Session):
-    new_tip = TipModel(**tip_data.dict())
-    db.add(new_tip)
-    db.commit()
-    db.refresh(new_tip)
-    return new_tip
+    def get_all(self, project_id: int, db: Session) -> list[Type[TipModel]]:
+        return db.query(self.model).where(self.model.project_id == project_id).all()
 
+    def delete_multi(self, tips_list: list[TipModel], db: Session):
+        for tip in tips_list:
+            db.delete(tip)
+        db.commit()
 
-def add_many_tips(tips_list: list[TipSaveIn], db: Session):
-    commit_list = []
-    for item in tips_list:
-        commit_list.append(TipModel(**item.dict()))
-    db.add_all(commit_list)
-    db.commit()
-
-
-def delete_many_tips(tips_list: list[TipModel], db: Session):
-    for tip in tips_list:
-        db.delete(tip)
-    db.commit()
-
-
-def receive_all_tips(project_id: int, db: Session) -> list[Type[TipModel]]:
-    return db.query(TipModel).filter(TipModel.project_id == project_id).all()
-
-
-def delete_rule_by_id(tip_id: int, db: Session):
-    db.query(TipModel).filter(TipModel.id == tip_id).delete()
-    db.commit()
+tip_repository = TipRepository(TipModel)

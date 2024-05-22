@@ -19,10 +19,11 @@ class RepositoryBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
             db_obj = self.model(**obj_in.dict())
             db.add(db_obj)
             db.commit()
-            return True
+            db.refresh(db_obj)
+            return db_obj
         except Exception as e:
             # TODO сделать нормальную обработку
-            return None
+            raise e
 
     def get(self, obj_id: int, db: Session) -> ModelType | None:
         model_obj = db.get(self.model, obj_id)

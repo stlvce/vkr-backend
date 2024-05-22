@@ -3,7 +3,7 @@ from typing import Annotated
 
 from app.config.database import get_db
 from app.auth.security import get_current_user
-from app.project.repository import receive_project_by_id
+from app.project.repository import project_repository
 from app.user.schemas import UserOut
 
 from .schemas import TipOut, TipSaveIn
@@ -16,9 +16,9 @@ tip_router = APIRouter()
 async def save_tips(project_id: int, tips_list: list[TipSaveIn],
                     current_user: Annotated[UserOut, Depends(get_current_user)],
                     db=Depends(get_db)):
-    project = receive_project_by_id(current_user.id, project_id, db)
+    project = project_repository.get(project_id, db)
 
-    if not project:
+    if not project or project.user_id != current_user.id:
         raise HTTPException(status_code=400)
     new_tips = []
     old_tips_id = []
@@ -44,9 +44,9 @@ async def save_tips(project_id: int, tips_list: list[TipSaveIn],
 @tip_router.get("/{project_id}", response_model=list[TipOut])
 async def get_tips(project_id: int, current_user: Annotated[UserOut, Depends(get_current_user)],
                    db=Depends(get_db)):
-    project = receive_project_by_id(current_user.id, project_id, db)
+    project = project_repository.get(project_id, db)
 
-    if not project:
+    if not project or project.user_id != current_user.id:
         raise HTTPException(status_code=400)
 
     return receive_all_tips(project.id, db)

@@ -4,21 +4,21 @@ from datetime import datetime
 from app.land.schemas import LandIn, LandOut
 from app.neighbours.schemas import LocationEnum, NeighborOut
 
-
-class ProjectCreate(BaseModel):
+class ProjectIn(BaseModel):
     title: str
     description: str | None = None
     land: LandIn
     neighbours: list[LocationEnum]
 
 
-class ProjectIn(BaseModel):
+class ProjectCreate(BaseModel):
+    user_id: int
     title: str
     description: str | None = None
 
 
+
 class ProjectEdit(BaseModel):
-    id: int
     title: str
     description: str | None = None
     changed_at: datetime | None = datetime.now()

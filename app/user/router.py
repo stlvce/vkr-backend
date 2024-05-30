@@ -1,10 +1,11 @@
-from fastapi import APIRouter, Depends, Response
+from fastapi import APIRouter, Depends, Response, HTTPException
 from typing import Annotated
 
 from app.config.database import get_db
 from app.auth.security import get_current_user
+from app.auth.service import verify_password, get_password_hash
 
-from .schemas import UserOut, UserIn, UserUpdate
+from .schemas import UserOut, UserIn, UserUpdate, UserPasswordUpdate
 from .repository import user_repository
 
 user_router = APIRouter()
@@ -25,9 +26,17 @@ async def edit_user_info(new_user_info: UserUpdate, current_user: Annotated[User
     return Response(content=None)
 
 
-@user_router.put("/password", deprecated=True)
-async def edit_user_password(new_user_info: UserIn, current_user: Annotated[UserOut, Depends(get_current_user)]):
-    pass
+@user_router.put("/password")
+async def edit_user_password(password_data: UserPasswordUpdate, current_user: Annotated[UserOut, Depends(get_current_user)], db=Depends(get_db)):
+    if password_data.new_password == password_data.old_password:
+        Response(status_code=200)
+
+    if not verify_password(password_data.old_password, current_user.hashed_password):
+        raise HTTPException(status_code=400)
+
+    hashed_password = get_password_hash(password_data.new_password)
+    user_repository.update_user_password(current_user.id, hashed_password, db)
+    return Response(status_code=200)
 
 
 @user_router.delete("")

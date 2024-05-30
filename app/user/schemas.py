@@ -24,3 +24,6 @@ class UserOut(BaseModel):
     username: str
     role: str
 
+class UserPasswordUpdate(BaseModel):
+    new_password: str
+    old_password: str

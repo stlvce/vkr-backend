@@ -18,7 +18,7 @@ from app.documents.router import document_router
 from app.material.router import material_router
 from app.neighbours.router import neighbor_router
 
-app = FastAPI(docs_url="/api/docs", version="1.0.0",
+app = FastAPI(docs_url="/api/docs", version="1.0.0", openapi_url="/api/openapi.json",
               swagger_ui_parameters={"operationsSorter": "method", "syntaxHighlight.theme": "obsidian"})
 
 Base.metadata.create_all(bind=engine)

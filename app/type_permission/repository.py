@@ -1,8 +1,9 @@
-from sqlalchemy import select
+from sqlalchemy import select, event
 from sqlalchemy.orm import Session, selectinload
 
 from app.config.models import TypePermissionModel, LandCategoryModel, DocumentModel
 from app.config.repository_base import RepositoryBase
+from app.documents.service import sync_remove_file
 
 from .schemas import (TypePermissionIn, TypePermissionCreate, TypePermissionOutWithCategoryOut, TypePermissionWithNorms,
                       TypePermissionWithDocuments, TypePermissionDocumentsNormsOut)
@@ -51,6 +52,11 @@ class TypePermissionRepository(RepositoryBase[TypePermissionModel, TypePermissio
         res = db.execute(query)
         result = res.unique().scalars().first()
         return result
+
+
+@event.listens_for(TypePermissionModel, "before_delete")
+def before_cascade_delete(mapper, connection, target):
+    sync_remove_file(target.image_url)
 
 
 type_permission_repository = TypePermissionRepository(TypePermissionModel)

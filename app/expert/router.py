@@ -19,7 +19,7 @@ async def expert_tips(body: ExpertIn, db=Depends(get_db)):
     # Получение норм по id ВРИ
     type_permission = type_permission_repository.get_norms(body.type_permission_id, db)
 
-    if len(type_permission.norms) == 0:
+    if len(type_permission.norms) == 0 or body.current_building.neighbor_id is not None:
         return {"current_building": body.current_building, "tips": result}
 
     # Извлечение норм о границе участка и границе соседа
@@ -81,6 +81,18 @@ async def expert_tips(body: ExpertIn, db=Depends(get_db)):
             relation = receive_relation(
                 body.current_building.type + curr_building_material_suffix,
                 "nb_" + building.type + other_building_material_suffix)
+
+        norm = find_norm_in_list(relation, type_permission.norms)
+
+        if norm is None and building.neighbor_id is None:
+            relation = receive_relation(
+                body.current_building.type,
+                building.type)
+
+        if norm is None and building.neighbor_id is not None:
+            relation = receive_relation(
+                body.current_building.type,
+                "nb_" + building.type)
 
         norm = find_norm_in_list(relation, type_permission.norms)
 

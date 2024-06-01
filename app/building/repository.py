@@ -1,9 +1,10 @@
+from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import Session, joinedload
 
 from app.config.repository_base import RepositoryBase
 from app.config.models import BuildingModel
 
-from .schemas import BuildingCreate, BuildingOut, BuildingEdit
+from .schemas import BuildingCreate, BuildingOut, BuildingEdit, BuildingSaveIn
 
 class BuildingRepository(RepositoryBase[BuildingModel, BuildingCreate, BuildingEdit]):
     def create_multi(self, building_list: list[BuildingCreate], db):
@@ -18,5 +19,19 @@ class BuildingRepository(RepositoryBase[BuildingModel, BuildingCreate, BuildingE
         joinedload(self.model.material)).all()
 
         return buildings
+
+    def multi_update(self, project_id: int, buildings_list: list[BuildingSaveIn], db: Session):
+        db_buildings = self.get_all(project_id, db)
+
+        for db_obj in db_buildings:
+            obj_data = jsonable_encoder(db_obj)
+            obj_in = [item for item in buildings_list if item.id == db_obj.id]
+            update_data = obj_in[0].dict()
+
+            for field in obj_data:
+                if field in update_data:
+                    setattr(db_obj, field, update_data[field])
+
+        db.commit()
 
 building_repository = BuildingRepository(BuildingModel)

@@ -33,11 +33,15 @@ class BuildingEdit(BaseModel):
     material_id: int | None = None
     neighbor_id: int | None = None
     title: str
-    start_x: float
-    start_y: float
+    start_x: float | None
+    start_y: float | None
     width: int
     length: int
     height: int
+
+
+class BuildingSaveIn(BuildingEdit):
+    id: int
 
 
 class BuildingDelete(BaseModel):

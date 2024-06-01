@@ -6,7 +6,7 @@ from app.auth.security import get_current_user
 from app.user.schemas import UserOut
 from app.project.repository import project_repository
 
-from .schemas import BuildingCreate, BuildingOut, BuildingEdit, BuildingDelete
+from .schemas import BuildingCreate, BuildingOut, BuildingEdit, BuildingDelete, BuildingSaveIn
 from .repository import building_repository
 
 building_router = APIRouter()
@@ -65,6 +65,17 @@ async def edit_building_info(project_id: int, building_id: int, building_data: B
     if not building:
         raise HTTPException(status_code=400)
 
+    return Response(status_code=200)
+
+
+@building_router.put("/{project_id}")
+async def save_buildings(project_id: int, buildings_list: list[BuildingSaveIn],
+                    current_user: Annotated[UserOut, Depends(get_current_user)],
+                    db=Depends(get_db)):
+    project = project_repository.get(project_id, db)
+    if not project or project.user_id != current_user.id:
+        raise HTTPException(status_code=400, detail="PROJECT_NOT_FOUND")
+    building_repository.multi_update(project_id, buildings_list, db)
     return Response(status_code=200)
 
 

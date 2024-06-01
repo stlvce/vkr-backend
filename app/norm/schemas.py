@@ -40,7 +40,7 @@ class NormOut(BaseModel):
 
 class NormIn(BaseModel):
     type_permission_id: int
-    document_id: int
+    document_id: int | None = None
     relation: List[str]
     distance: int
     description: str

@@ -16,8 +16,10 @@ class NormRepository(RepositoryBase[NormModel, NormIn, NormUpdate]):
         db.refresh(db_norm)
 
         db_types_norms = TypePermissionNorms(type_permission_id=obj_in.type_permission_id, norm_id=db_norm.id)
-        db_documents_norms = DocumentNorms(document_id=obj_in.document_id, norm_id=db_norm.id)
-        db.add_all([db_types_norms, db_documents_norms])
+        db.add(db_types_norms)
+        if obj_in.document_id is not None:
+            db_documents_norms = DocumentNorms(document_id=obj_in.document_id, norm_id=db_norm.id)
+            db.add(db_documents_norms)
         db.commit()
 
         return db_norm

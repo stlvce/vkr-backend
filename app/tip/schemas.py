@@ -34,3 +34,4 @@ class TipSaveIn(BaseModel):
     priority: PriorityEnum
     type: str
     current_distance: float
+    buildings: list[int]

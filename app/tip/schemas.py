@@ -14,7 +14,7 @@ class TipOut(BaseModel):
     description: str
     priority: PriorityEnum
     type: str
-    current_distance: int
+    current_distance: float
 
 
 class TipIn(BaseModel):
@@ -23,7 +23,7 @@ class TipIn(BaseModel):
     description: str
     priority: PriorityEnum
     type: str
-    current_distance: int
+    current_distance: float
 
 
 class TipSaveIn(BaseModel):
@@ -33,4 +33,4 @@ class TipSaveIn(BaseModel):
     description: str
     priority: PriorityEnum
     type: str
-    current_distance: int
+    current_distance: float

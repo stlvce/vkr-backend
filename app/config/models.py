@@ -116,7 +116,7 @@ class TipModel(Base):
 
     description: Mapped[str] = mapped_column(String(200))
     priority: Mapped[int] = mapped_column(String(10))
-    current_distance: Mapped[int] = mapped_column(SmallInteger)
+    current_distance: Mapped[int] = mapped_column(Float)
     type: Mapped[str] = mapped_column(String(30))
 
     project: Mapped["ProjectModel"] = relationship("ProjectModel", back_populates="tips")
@@ -191,7 +191,7 @@ class NormModel(Base):
 
     relation: Mapped[str] = mapped_column(String(50))
     description: Mapped[str] = mapped_column(String(200), unique=True)
-    distance: Mapped[int] = mapped_column(SmallInteger)
+    distance: Mapped[int] = mapped_column(Float)
     priority: Mapped[int] = mapped_column(String(10))
     type: Mapped[str] = mapped_column(String(30))
 

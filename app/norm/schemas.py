@@ -32,7 +32,7 @@ class TypeEnum(str, Enum):
 class NormOut(BaseModel):
     id: int
     relation: str
-    distance: int
+    distance: float
     description: str
     priority: PriorityEnum
     type: TypeEnum
@@ -42,7 +42,7 @@ class NormIn(BaseModel):
     type_permission_id: int
     document_id: int | None = None
     relation: List[str]
-    distance: int
+    distance: float
     description: str
     priority: PriorityEnum
     type: TypeEnum
@@ -50,7 +50,7 @@ class NormIn(BaseModel):
 
 class NormUpdateIn(BaseModel):
     relation: List[str]
-    distance: int
+    distance: float
     description: str
     priority: PriorityEnum
     type: TypeEnum
@@ -58,7 +58,7 @@ class NormUpdateIn(BaseModel):
 
 class NormUpdate(BaseModel):
     relation: str
-    distance: int
+    distance: float
     description: str
     priority: PriorityEnum
     type: TypeEnum

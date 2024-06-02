@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 
 from app.building.schemas import BuildingOut
-from app.tip.schemas import PriorityEnum
+from app.tip.schemas import PriorityEnum, TipOut
 from app.land.schemas import LandOut
 from app.neighbours.schemas import LocationEnum
 
@@ -19,13 +19,9 @@ class ExpertIn(BaseModel):
     other_buildings: list[BuildingOut]
 
 
-class TipExpertOut(BaseModel):
-    norm_id: int
-    description: str
-    priority: PriorityEnum
-    current_distance: float
-    type: str
-    buildings: list[int]
+class TipExpertOut(TipOut):
+    id: int | None = None
+    project_id: int | None = None
 
 
 class ExpertOut(BaseModel):

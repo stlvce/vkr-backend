@@ -1,6 +1,8 @@
 from pydantic import BaseModel
 from enum import Enum
 
+from app.building.schemas import BuildingOut
+
 
 class PriorityEnum(str, Enum):
     low = 'low'
@@ -15,6 +17,7 @@ class TipOut(BaseModel):
     priority: PriorityEnum
     type: str
     current_distance: float
+    buildings: list[BuildingOut]
 
 
 class TipIn(BaseModel):

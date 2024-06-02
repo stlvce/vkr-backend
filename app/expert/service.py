@@ -58,8 +58,7 @@ def check_border(norm: NormOut, building: BuildingOut, land: LandInfo, border_lo
                             priority=norm.priority,
                             current_distance=border_distance,
                             type=norm.type,
-                            relation=norm.relation,
-                            target_buildings=[building.id]
+                            buildings=[building.id]
                             )
 
     return None
@@ -90,7 +89,7 @@ def check_borders(norm: NormOut, building: BuildingOut, land: LandInfo) -> list[
                                        priority=norm.priority,
                                        current_distance=border_distance,
                                        type=norm.type,
-                                       relation=receive_relation("border", building.type)
+                                       buildings=[building.id]
                                        )
                           )
             break

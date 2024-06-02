@@ -105,8 +105,7 @@ async def expert_tips(body: ExpertIn, db=Depends(get_db)):
                                        priority=norm.priority,
                                        current_distance=calc_distance,
                                        type=norm.type,
-                                       relation=relation,
-                                       target_buildings=[body.current_building.id, building.id]
+                                       buildings=[body.current_building.id, building.id]
                                        )
                           )
 

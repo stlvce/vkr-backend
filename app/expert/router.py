@@ -113,7 +113,7 @@ async def expert_tips(body: ExpertIn, db=Depends(get_db)):
     return {"current_building": body.current_building, "tips": result}
 
 
-@expert_router.get("/norms-report/{type_permission_id}")
+@expert_router.post("/norms-report/{type_permission_id}")
 async def norms_report(type_permission_id: int, body: list[BuildingOut], db=Depends(get_db)):
     if len(body) == 0:
         return []

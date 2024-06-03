@@ -30,7 +30,7 @@ async def save_tips(project_id: int, tips_list: list[TipSaveIn],
 
     tips_in_db = tip_repository.get_all(project.id, db)
 
-    tip_repository.create_multi(new_tips, db)
+    tip_repository.create_multi(project.id, new_tips, db)
 
     delete_tips = []
     for tip_in_db in tips_in_db:

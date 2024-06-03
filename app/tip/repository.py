@@ -7,9 +7,10 @@ from app.config.models import TipModel, BuildingTips
 from .schemas import TipIn, TipSaveIn
 
 class TipRepository(RepositoryBase[TipModel, TipIn, TipIn]):
-    def create_multi(self, tips_list: list[TipSaveIn], db: Session):
+    def create_multi(self, project_id: int, tips_list: list[TipSaveIn], db: Session):
         for item in tips_list:
             new_tip_dict = item.dict()
+            new_tip_dict["project_id"] = project_id
             buildings_id_list = new_tip_dict.pop("buildings")
             new_tip = self.model(**new_tip_dict)
             db.add(new_tip)

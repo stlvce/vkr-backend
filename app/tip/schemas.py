@@ -31,7 +31,7 @@ class TipIn(BaseModel):
 
 class TipSaveIn(BaseModel):
     id: int | None = None
-    project_id: int
+    project_id: int | None = None
     norm_id: int
     description: str
     priority: PriorityEnum

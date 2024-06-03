@@ -23,10 +23,10 @@ class BuildingRepository(RepositoryBase[BuildingModel, BuildingCreate, BuildingE
     def multi_update(self, project_id: int, buildings_list: list[BuildingSaveIn], db: Session):
         db_buildings = self.get_all(project_id, db)
 
-        for db_obj in db_buildings:
+        for obj_in in buildings_list:
+            db_obj = [item for item in db_buildings if item.id == obj_in.id][0]
             obj_data = jsonable_encoder(db_obj)
-            obj_in = [item for item in buildings_list if item.id == db_obj.id]
-            update_data = obj_in[0].dict()
+            update_data = obj_in.dict()
 
             for field in obj_data:
                 if field in update_data:

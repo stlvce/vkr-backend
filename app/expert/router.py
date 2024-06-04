@@ -61,14 +61,16 @@ async def expert_tips(body: ExpertIn, db=Depends(get_db)):
 
     curr_building_material_suffix = ""
 
-    if body.current_building.material is not None:
-        curr_building_material_suffix = "_" + body.current_building.material.type
+
 
     for building in body.other_buildings:
         other_building_material_suffix = ""
         if building.material is not None:
             other_building_material_suffix = "_" + building.material.type
 
+        if body.current_building.material is not None:
+            curr_building_material_suffix = "_" + body.current_building.material.type
+            
         # TODO Это убрать
         if building.material is None or body.current_building.material is None:
             curr_building_material_suffix = ""
@@ -83,6 +85,7 @@ async def expert_tips(body: ExpertIn, db=Depends(get_db)):
                 body.current_building.type + curr_building_material_suffix,
                 "nb_" + building.type + other_building_material_suffix)
 
+        print(relation)
         norm = find_norm_in_list(relation, type_permission.norms)
 
         if norm is None and building.neighbor_id is None:

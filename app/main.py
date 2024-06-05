@@ -53,5 +53,5 @@ app.include_router(material_router, prefix="/api/material", tags=["material"])
 async def startup_event():
     logger = logging.getLogger("uvicorn.access")
     handler = logging.StreamHandler()
-    handler.setFormatter(logging.Formatter("%(asctime)s - \033[92m%(levelname)s: \033[94m%(message)s"))
+    handler.setFormatter(logging.Formatter("%(asctime)s - \033[92m%(levelname)s: \033[97m%(message)s"))
     logger.addHandler(handler)

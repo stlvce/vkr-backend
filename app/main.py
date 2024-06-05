@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+import logging
 
 from app.config.database import engine
 from app.config.models import Base
@@ -47,3 +48,10 @@ app.include_router(init_building_router, prefix="/api/init-building", tags=["ini
 app.include_router(norm_router, prefix="/api/norm", tags=["norm"])
 app.include_router(document_router, prefix="/api/document", tags=["document"])
 app.include_router(material_router, prefix="/api/material", tags=["material"])
+
+@app.on_event("startup")
+async def startup_event():
+    logger = logging.getLogger("uvicorn.access")
+    handler = logging.StreamHandler()
+    handler.setFormatter(logging.Formatter("%(asctime)s - \033[92m%(levelname)s: \033[94m%(message)s"))
+    logger.addHandler(handler)

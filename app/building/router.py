@@ -5,6 +5,7 @@ from app.config.database import get_db
 from app.auth.security import get_current_user
 from app.user.schemas import UserOut
 from app.project.repository import project_repository
+from app.tip.repository import tip_repository
 
 from .schemas import BuildingCreate, BuildingOut, BuildingEdit, BuildingDelete, BuildingSaveIn
 from .repository import building_repository
@@ -54,7 +55,7 @@ async def get_buildings(project_id: int, current_user: Annotated[UserOut, Depend
 
 
 @building_router.put("/{project_id}/{building_id}")
-async def edit_building_info(project_id: int, building_id: int, building_data: BuildingEdit,
+async def delete_building_from_canvas(project_id: int, building_id: int, building_data: BuildingEdit,
                              current_user: Annotated[UserOut, Depends(get_current_user)],
                              db=Depends(get_db)):
     project = project_repository.get(project_id, db)
@@ -64,6 +65,9 @@ async def edit_building_info(project_id: int, building_id: int, building_data: B
     building = building_repository.update(building_id, building_data, db)
     if not building:
         raise HTTPException(status_code=400)
+
+    if len(building.tips) != 0:
+        tip_repository.delete_multi(building.tips, db)
 
     return Response(status_code=200)
 

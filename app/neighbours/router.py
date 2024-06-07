@@ -30,6 +30,10 @@ async def update_neighbours(project_id: int, locations: list[LocationEnum], curr
     project = project_repository.get(project_id, db)
     if not project or project.user_id != current_user.id:
         raise HTTPException(status_code=400)
+    
+    for location in locations:
+        if location in project.land.red_borders:
+            raise HTTPException(status_code=400, detail="Участок соседа пересекается с красной линией улицы")
 
     neighbours_db = neighbor_repository.get_all_by_project_id(project_id, db)
 

@@ -22,5 +22,10 @@ class NeighborRepository(RepositoryBase[NeighborModel, NeighborIn, NeighborIn]):
         db.add_all(commit_list)
         db.commit()
 
+    def delete_multi(self, data_list: list[NeighborModel], db: Session):
+        for neighbor in data_list:
+            db.delete(neighbor)
+        db.commit()
+
 
 neighbor_repository = NeighborRepository(NeighborModel)

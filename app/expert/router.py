@@ -128,16 +128,18 @@ async def norms_report(type_permission_id: int, body: list[BuildingOut], db=Depe
         
     norms_list = type_permission.norms
 
-    relations_list = []
-    for item in range(len(body)):
-        for el in other_objs:
-            relations_list.append(receive_relation(body[item].type, el))
-        for el in range(item + 1, len(body)):
-            relations_list.append(receive_relation(body[item].type, body[el].type))
+    # TODO временно, потом сделать учет материалов и соседства
+    return norms_list
+    # relations_list = []
+    # for item in range(len(body)):
+    #     for el in other_objs:
+    #         relations_list.append(receive_relation(body[item].type, el))
+    #     for el in range(item + 1, len(body)):
+    #         relations_list.append(receive_relation(body[item].type, body[el].type))
     
-    result = []
-    for item in norms_list:
-        if item.relation in relations_list:
-            result.append(item)
+    # result = []
+    # for item in norms_list:
+    #     if item.relation in relations_list:
+    #         result.append(item)
 
-    return result
+    # return result

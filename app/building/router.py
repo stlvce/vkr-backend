@@ -94,7 +94,7 @@ async def delete_building(building_data: BuildingDelete, current_user: Annotated
     if not result:
         raise HTTPException(status_code=400)
 
-    if len(building.tips) != 0:
+    if len(result.tips) != 0:
         tip_repository.delete_multi(result.tips, db)
 
     return Response(status_code=200)

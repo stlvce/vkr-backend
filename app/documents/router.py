@@ -20,9 +20,9 @@ async def create_document(file: UploadFile, db=Depends(get_db)):
     if file_type != "pdf":
         raise HTTPException(status_code=400, detail="ONLY_PDF")
     document_repository.create(
-        DocumentIn(title=".".join(filename_parts), file_type="pdf", link=uuid_code),
+        DocumentIn(title=".".join(filename_parts), file_type="pdf", link=uuid_code + ".pdf"),
         db)
-    await upload_file(file, uuid_code)
+    await upload_file(file, uuid_code + ".pdf")
     return Response(status_code=200)
 
 

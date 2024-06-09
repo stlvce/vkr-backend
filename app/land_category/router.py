@@ -19,9 +19,9 @@ async def create_land_category(land_category_title: Annotated[str, Form()], file
         uuid_code = str(uuid4())
         land_category_repository.create(
             LandCategoryCreate(category_title=land_category_title,
-                               image_url=uuid_code), db)
+                               image_url=uuid_code + f".{file_type}"), db)
 
-        await upload_file(file, uuid_code)
+        await upload_file(file, uuid_code + f".{file_type}")
         return Response(status_code=200)
 
     raise HTTPException(status_code=400, detail="ONLY_PNG_JPG_JPEG")

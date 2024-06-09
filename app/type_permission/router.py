@@ -27,8 +27,8 @@ async def create_type_permission(land_category_id: Annotated[int, Form()], title
 
         uuid_code = str(uuid4())
         type_permission_repository.create(TypePermissionCreate(land_category_id=land_category_id, title=title,
-        code=code, image_url=uuid_code), db)
-        await upload_file(file, uuid_code)
+        code=code, image_url=uuid_code + f".{file_type}"), db)
+        await upload_file(file, uuid_code + f".{file_type}")
 
         return Response(status_code=200)
 

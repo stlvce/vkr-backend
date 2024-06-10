@@ -54,14 +54,11 @@ async def expert_tips(body: ExpertIn, db=Depends(get_db)):
             if tip is not None:
                 result.append(tip)
 
-
     # Проверка расстояния между строениями
     if len(body.other_buildings) == 0:
         return {"current_building": body.current_building, "tips": result}
 
     curr_building_material_suffix = ""
-
-
 
     for building in body.other_buildings:
         other_building_material_suffix = ""
@@ -71,7 +68,6 @@ async def expert_tips(body: ExpertIn, db=Depends(get_db)):
         if body.current_building.material is not None:
             curr_building_material_suffix = "_" + body.current_building.material.type
             
-        # TODO Это убрать
         if building.material is None or body.current_building.material is None:
             curr_building_material_suffix = ""
 
@@ -85,7 +81,6 @@ async def expert_tips(body: ExpertIn, db=Depends(get_db)):
                 body.current_building.type + curr_building_material_suffix,
                 "nb_" + building.type + other_building_material_suffix)
 
-        print(relation)
         norm = find_norm_in_list(relation, type_permission.norms)
 
         if norm is None and building.neighbor_id is None:

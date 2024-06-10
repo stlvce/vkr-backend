@@ -23,9 +23,9 @@ async def create_project(project_data: ProjectIn, current_user: Annotated[UserOu
     land_data = project_data_dict.pop("land")
     neighbours_list = project_data_dict.pop("neighbours")
 
-    for neighbor in neighbours_list:
-        if neighbor in land_data.red_borders:
-            raise HTTPException(status_code=400, detail="Участок соседа пересекается с красной линией улицы")
+    # for neighbor in neighbours_list:
+    #     if neighbor in land_data.red_borders:
+    #         raise HTTPException(status_code=400, detail="Участок соседа пересекается с красной линией улицы")
 
     project = project_repository.create(ProjectCreate(**project_data_dict, user_id=current_user.id,), db)
     land_repository.create(LandCreate(project_id=project.id, **land_data), db)
